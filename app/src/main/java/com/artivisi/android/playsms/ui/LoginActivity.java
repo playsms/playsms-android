@@ -1,11 +1,12 @@
 package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
+import com.google.gson.Gson;
 
 
 public class LoginActivity extends Activity {
@@ -26,6 +28,10 @@ public class LoginActivity extends Activity {
     LinearLayout layoutLoading;
     TextView textLoginError;
     String username, password;
+
+    public static final String PREFS = "playSMS";
+    public static final String KEY_USER = "user";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,8 +112,49 @@ public class LoginActivity extends Activity {
             }
             if(loginHelper.getError().equals("0")){
                 textLoginError.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(), loginHelper.getToken(), Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                setUserCookies(KEY_USER, gson.toJson(loginHelper));
+                showDashboard();
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
+        if(sp.contains(KEY_USER)){
+            showDashboard();
+        }
+    }
+
+    public void showDashboard(){
+        Intent dashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
+        startActivity(dashboardActivity);
+        finish();
+    }
+
+    protected void setUserCookies(String key, String value){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    protected <T> T getUserCookie(String key, Class<T> a) {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS, Context.MODE_PRIVATE);
+
+        if (sharedPreferences == null) {
+            return null;
+        }
+
+        String data = sharedPreferences.getString(key, null);
+
+        if (data == null) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            return gson.fromJson(data, a);
         }
     }
 }

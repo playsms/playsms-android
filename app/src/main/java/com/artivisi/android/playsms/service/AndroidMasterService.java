@@ -7,4 +7,5 @@ import com.artivisi.android.playsms.helper.LoginHelper;
  */
 public interface AndroidMasterService {
     public LoginHelper getToken(String username, String password);
+
 }
