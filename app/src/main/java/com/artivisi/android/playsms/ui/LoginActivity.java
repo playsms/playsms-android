@@ -1,7 +1,6 @@
 package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,11 +18,12 @@ import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 
-
 public class LoginActivity extends Activity {
 
     AndroidMasterService service = new AndroidMasterServiceImpl();
-    EditText username, password;
+    EditText mUsername, mPassword;
+    LinearLayout loadingLayout;
+    String username, password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,31 +33,42 @@ public class LoginActivity extends Activity {
         Typeface typefaceSubTittle = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Medium.ttf");
         Typeface ralewayRegular = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Regular.ttf");
 
+        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+        loadingLayout.setVisibility(View.INVISIBLE);
+
+        TextView loadingText = (TextView) findViewById(R.id.loading_text);
+        loadingText.setTypeface(typefaceSubTittle);
+
         TextView bannerTittle = (TextView) findViewById(R.id.banner_tittle);
         bannerTittle.setTypeface(typefaceTittle);
 
         TextView bannerSubTittle = (TextView) findViewById(R.id.banner_subtittle);
         bannerSubTittle.setTypeface(typefaceSubTittle);
 
-        username = (EditText) findViewById(R.id.username);
-        username.setTypeface(ralewayRegular);
+        mUsername = (EditText) findViewById(R.id.username);
+        mUsername.setTypeface(ralewayRegular);
 
-        password = (EditText) findViewById(R.id.password);
-        password.setTypeface(ralewayRegular);
+        mPassword = (EditText) findViewById(R.id.password);
+        mPassword.setTypeface(ralewayRegular);
 
         Button btnLogin = (Button) findViewById(R.id.button_login);
         btnLogin.setTypeface(typefaceTittle);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(username.getText().equals("")) {
-                    username.setError("Required");
-                } else if (password.getText().equals("")) {
-                    password.setError("Required");
-                } else if (username.getText().equals("") || password.getText().equals("")) {
-                    username.setError("Required");
-                    password.setError("Required");
+                username = mUsername.getText().toString();
+                password = mPassword.getText().toString();
+
+                if(username.isEmpty()) {
+                    mUsername.setError("Required");
+                } else if (password.isEmpty()) {
+                    mPassword.setError("Required");
+                } else if (username.isEmpty() && password.isEmpty()) {
+                    mUsername.setError("Required");
+                    mPassword.setError("Required");
                 } else {
+                    mUsername.setError(null);
+                    mPassword.setError(null);
                     new Login().execute();
                 }
             }
@@ -64,15 +76,21 @@ public class LoginActivity extends Activity {
     }
 
     public class Login extends AsyncTask<Void, Void, LoginHelper>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingLayout.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected LoginHelper doInBackground(Void... params) {
-            return service.getToken(username.getText().toString(), password.getText().toString());
+            return service.getToken(username, password);
         }
 
         @Override
         protected void onPostExecute(LoginHelper loginHelper) {
             super.onPostExecute(loginHelper);
+            loadingLayout.setVisibility(View.INVISIBLE);
             if(loginHelper.getStatus().equals("ERR")){
                 Toast.makeText(getApplicationContext(), loginHelper.getErrorString(), Toast.LENGTH_SHORT).show();
             } else {
