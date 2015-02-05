@@ -18,11 +18,13 @@ import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 
+
 public class LoginActivity extends Activity {
 
     AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword;
-    LinearLayout loadingLayout;
+    LinearLayout layoutLoading;
+    TextView textLoginError;
     String username, password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +35,14 @@ public class LoginActivity extends Activity {
         Typeface typefaceSubTittle = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Medium.ttf");
         Typeface ralewayRegular = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Regular.ttf");
 
-        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
-        loadingLayout.setVisibility(View.INVISIBLE);
+        layoutLoading = (LinearLayout) findViewById(R.id.layout_loading);
+        layoutLoading.setVisibility(View.INVISIBLE);
 
-        TextView loadingText = (TextView) findViewById(R.id.loading_text);
+        textLoginError = (TextView) findViewById(R.id.text_login_error);
+        textLoginError.setVisibility(View.INVISIBLE);
+        textLoginError.setTypeface(typefaceSubTittle);
+
+        TextView loadingText = (TextView) findViewById(R.id.text_login_loading);
         loadingText.setTypeface(typefaceSubTittle);
 
         TextView bannerTittle = (TextView) findViewById(R.id.banner_tittle);
@@ -59,6 +65,9 @@ public class LoginActivity extends Activity {
                 username = mUsername.getText().toString();
                 password = mPassword.getText().toString();
 
+                mUsername.setError(null);
+                mPassword.setError(null);
+
                 if(username.isEmpty()) {
                     mUsername.setError("Required");
                 } else if (password.isEmpty()) {
@@ -79,7 +88,8 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            loadingLayout.setVisibility(View.VISIBLE);
+            textLoginError.setVisibility(View.INVISIBLE);
+            layoutLoading.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -90,34 +100,14 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(LoginHelper loginHelper) {
             super.onPostExecute(loginHelper);
-            loadingLayout.setVisibility(View.INVISIBLE);
-            if(loginHelper.getStatus().equals("ERR")){
-                Toast.makeText(getApplicationContext(), loginHelper.getErrorString(), Toast.LENGTH_SHORT).show();
-            } else {
+            layoutLoading.setVisibility(View.INVISIBLE);
+            if(loginHelper.getError().equals("100")){
+                textLoginError.setVisibility(View.VISIBLE);
+            }
+            if(loginHelper.getError().equals("0")){
+                textLoginError.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), loginHelper.getToken(), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

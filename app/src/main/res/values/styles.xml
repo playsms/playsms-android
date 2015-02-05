@@ -72,6 +72,12 @@
         <item name="android:textSize">@dimen/banner_subtittle</item>
     </style>
 
+    <style name="ErrorMessage" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@android:color/holo_red_dark</item>
+        <item name="android:textSize">@dimen/banner_subtittle</item>
+    </style>
+
     <!--Line-->
     <style name="DashedLine">
         <item name="android:layout_width">match_parent</item>
