@@ -4,9 +4,96 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
+
+    <!--Layout-->
+    <style name="DefaultLayout">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="LayoutHorizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
     <style name="LayoutVertical">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="LayoutMatchParent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LayoutWrapContent">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="LayoutFillParent">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+
+    <style name="DefaultComponentLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/default_component_margin</item>
+        <item name="android:padding">@dimen/default_component_padding</item>
+    </style>
+
+    <!--Banner-->
+    <style name="Banner" parent="DefaultComponentLayout">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/banner_bg</item>
+    </style>
+
+    <style name="BannerTittle" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/banner_tittle</item>
+    </style>
+
+    <style name="BannerSubTittle" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/banner_subtittle</item>
+    </style>
+
+    <!--Line-->
+    <style name="DashedLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/line_layout</item>
+        <item name="android:layerType">software</item>
+        <item name="android:background">@drawable/dashed_line</item>
+    </style>
+
+    <!--EditText-->
+    <style name="EditText" parent="DefaultComponentLayout">
+        <item name="android:background">@drawable/edittext_bg</item>
+        <item name="android:textColor">@color/blue_navy_primary</item>
+        <item name="android:textSize">@dimen/edittext_text</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!--Button-->
+    <style name="Button" parent="DefaultComponentLayout">
+        <item name="android:background">@drawable/button_blue_selector</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/button_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 </resources>

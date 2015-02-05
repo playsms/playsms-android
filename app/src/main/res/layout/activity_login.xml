@@ -1,0 +1,41 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultLayout"
+    android:background="@color/blue_sky"
+    tools:context=".LoginActivity">
+
+    <LinearLayout style="@style/LayoutVertical"
+        android:layout_weight="2"
+        android:gravity="center">
+
+        <TextView style="@style/BannerTittle"
+            android:text="@string/tittle"
+            android:id="@+id/banner_tittle" />
+
+        <TextView style="@style/BannerSubTittle"
+            android:text="@string/subtittle"
+            android:id="@+id/banner_subtittle" />
+
+    </LinearLayout>
+
+    <View style="@style/DashedLine"/>
+
+    <LinearLayout style="@style/LayoutVertical"
+        android:layout_weight="3"
+        android:gravity="center">
+
+        <EditText style="@style/EditText"
+            android:hint="@string/username"
+            android:id="@+id/username" />
+
+        <EditText style="@style/EditText"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:id="@+id/password" />
+
+        <Button style="@style/Button"
+            android:text="@string/signin"
+            android:id="@+id/button_login"/>
+    </LinearLayout>
+</LinearLayout>
