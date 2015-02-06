@@ -12,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
  * Created by opaw on 2/5/15.
  */
 public class AndroidMasterServiceImpl implements AndroidMasterService {
-    private static final String BASE_URI = "http://my.textng.com/index.php?app=ws&";
+    private static final String PLAYSMS_URL = "http://my.textng.com";
+    private static final String BASE_URI = "/index.php?app=ws";
     RestTemplate restTemplate = new RestTemplate(true);
 
     public AndroidMasterServiceImpl() {
@@ -21,7 +22,7 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
 
     @Override
     public LoginHelper getToken(String username, String password) {
-        String url = BASE_URI + "u=" + username + "&p=" + password + "&op=get_token&format=json";
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
 
         ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
 
