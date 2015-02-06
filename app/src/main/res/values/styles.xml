@@ -78,6 +78,26 @@
         <item name="android:textSize">@dimen/banner_subtittle</item>
     </style>
 
+    <style name="MenuListLayout" parent="LayoutHorizontal">
+        <item name="android:background">@color/grey_light</item>
+    </style>
+
+    <style name="MenuListTittle" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/default_component_margin</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:textSize">@dimen/default_component_text</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MenuListIcon" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/default_component_padding</item>
+    </style>
+
     <!--Line-->
     <style name="DashedLine">
         <item name="android:layout_width">match_parent</item>
@@ -98,7 +118,7 @@
     <style name="Button" parent="DefaultComponentLayout">
         <item name="android:background">@drawable/button_blue_selector</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/button_text</item>
+        <item name="android:textSize">@dimen/default_component_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>

@@ -4,4 +4,6 @@
     <color name="blue_navy_primary">#323e4e</color>
     <color name="blue_navy_secondary">#485970</color>
     <color name="grey">#8b99a0</color>
+    <color name="grey_dark">#444444</color>
+    <color name="grey_light">#cccccc</color>
 </resources>

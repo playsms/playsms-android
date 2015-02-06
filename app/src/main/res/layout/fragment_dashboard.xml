@@ -6,7 +6,11 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.artivisi.android.playsms.ui.DashboardActivity$PlaceholderFragment">
 
-    <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+    <LinearLayout style="@style/LayoutHorizontal">
+        <ImageView style="@style/LayoutWrapContent"
+            android:layout_margin="@dimen/default_component_margin"
+            android:src="@drawable/envelope_black"/>
+        <TextView style="@style/BannerSubTittle"
+            android:text="Inbox"/>
+    </LinearLayout>
 </RelativeLayout>

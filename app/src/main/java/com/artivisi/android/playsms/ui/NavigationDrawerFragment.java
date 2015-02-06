@@ -1,5 +1,6 @@
 package com.artivisi.android.playsms.ui;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -19,7 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
@@ -60,6 +64,9 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    private static final String[] LIST_TITTLE = {"inbox", "sent", "sign out"};
+    private static final int[] LIST_ICON = {R.drawable.envelope_black, R.drawable.envelope_o_black, R.drawable.sign_out_black};
+
     public NavigationDrawerFragment() {
     }
 
@@ -99,15 +106,16 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        "Sign Out",
-                }));
+//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+//                getActionBar().getThemedContext(),
+//                android.R.layout.simple_list_item_activated_1,
+//                android.R.id.text1,
+//                new String[]{
+//                        getString(R.string.title_section1),
+//                        getString(R.string.title_section2),
+//                        "Sign Out",
+//                }));
+        mDrawerListView.setAdapter(new MenuListAdapter());
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -280,5 +288,39 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    private class MenuListAdapter extends BaseAdapter{
+
+
+        @Override
+        public int getCount() {
+            return LIST_TITTLE.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.list_menu, parent, false);
+            }
+
+            ImageView menuIcon = (ImageView) convertView.findViewById(R.id.menu_list_icon);
+            menuIcon.setImageResource(LIST_ICON[position]);
+
+            TextView menuTittle = (TextView) convertView.findViewById(R.id.menu_list_tittle);
+            menuTittle.setText(LIST_TITTLE[position]);
+
+            return null;
+        }
     }
 }
