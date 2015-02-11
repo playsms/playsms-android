@@ -22,14 +22,12 @@ import com.google.gson.Gson;
 
 public class ComposeMessageActivity extends ActionBarActivity {
 
-    private String username;
-    private String token;
     private String to;
     private String msg;
 
     private EditText mMsgTo, mMsg;
     private ProgressBar sendingMsg;
-    private AndroidMasterService service = new AndroidMasterServiceImpl();
+    private AndroidMasterService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +37,9 @@ public class ComposeMessageActivity extends ActionBarActivity {
         getSupportActionBar().setTitle("New Message");
 
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
-        username = u.getUsername();
-        token = u.getToken();
+
+        service = new AndroidMasterServiceImpl(u);
+
         mMsgTo = (EditText) findViewById(R.id.txt_msg_to);
         mMsg = (EditText) findViewById(R.id.txt_msg);
         sendingMsg = (ProgressBar) findViewById(R.id.sending_msg);
@@ -81,7 +80,7 @@ public class ComposeMessageActivity extends ActionBarActivity {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.sendMessage(username, token, to, msg);
+            return service.sendMessage(to, msg);
         }
 
         @Override

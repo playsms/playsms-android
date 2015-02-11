@@ -6,6 +6,7 @@ package com.artivisi.android.playsms.domain;
 public class User {
     private String username;
     private String token;
+    private String serverUrl;
 
     public String getUsername() {
         return username;
@@ -21,5 +22,13 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 }

@@ -53,7 +53,7 @@ public class InboxFragment extends Fragment {
     private ListView lvInbox;
     private View rootView;
     private TextView mEmptyInbox;
-    private AndroidMasterService service = new AndroidMasterServiceImpl();
+    private AndroidMasterService service;
 
     /**
      * Use this factory method to create a new instance of
@@ -89,8 +89,8 @@ public class InboxFragment extends Fragment {
         }
 
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
-        username = u.getUsername();
-        token = u.getToken();
+        service = new AndroidMasterServiceImpl(u);
+
     }
 
     @Override
@@ -161,7 +161,7 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getInbox(username, token);
+            return service.getInbox();
         }
 
         @Override

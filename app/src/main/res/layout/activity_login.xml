@@ -24,7 +24,7 @@
         </LinearLayout>
 
         <FrameLayout style="@style/LayoutMatchParent"
-            android:layout_weight="5">
+            android:layout_weight="4">
 
             <LinearLayout style="@style/LayoutHorizontal"
                 android:layout_gravity="center"
@@ -47,7 +47,15 @@
         <View style="@style/DashedLine"/>
 
         <LinearLayout style="@style/LayoutVertical"
-            android:layout_weight="4">
+            android:layout_weight="3">
+
+            <EditText style="@style/EditText"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="playSMS URL"
+                android:id="@+id/server_url"/>
+
+            <View style="@style/DashedLine" />
 
             <EditText style="@style/EditText"
                 android:layout_height="match_parent"

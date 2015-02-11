@@ -41,7 +41,7 @@ public class DashboardActivity extends ActionBarActivity implements
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private AndroidMasterService service = new AndroidMasterServiceImpl();
+    private AndroidMasterService service;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -60,6 +60,9 @@ public class DashboardActivity extends ActionBarActivity implements
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         user = getUserCookie(LoginActivity.KEY_USER, User.class);
+
+        service = new AndroidMasterServiceImpl(user);
+
         mTitle = user.getUsername();
         mCredit = "Checking Credit";
         new GetCredit().execute();
@@ -230,7 +233,7 @@ public class DashboardActivity extends ActionBarActivity implements
 
         @Override
         protected Credit doInBackground(Void... params) {
-            return service.getCredit(user.getUsername(), user.getToken());
+            return service.getCredit();
         }
 
         @Override

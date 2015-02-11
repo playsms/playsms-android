@@ -9,8 +9,8 @@ import com.artivisi.android.playsms.helper.MessageHelper;
  */
 public interface AndroidMasterService {
     public LoginHelper getToken(String username, String password);
-    public MessageHelper getSentMessage(String username, String token);
-    public MessageHelper getInbox(String username, String token);
-    public MessageHelper sendMessage(String username, String token, String to, String msg);
-    public Credit getCredit(String username, String token);
+    public MessageHelper getSentMessage();
+    public MessageHelper getInbox();
+    public MessageHelper sendMessage(String to, String msg);
+    public Credit getCredit();
 }

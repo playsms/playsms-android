@@ -52,7 +52,7 @@ public class SentMessageFragment extends Fragment {
     private ListView lvSentMessage;
     private View rootView;
     private TextView mEmptySentMsg;
-    private AndroidMasterService service = new AndroidMasterServiceImpl();
+    private AndroidMasterService service;
 
     /**
      * Use this factory method to create a new instance of
@@ -85,8 +85,8 @@ public class SentMessageFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
-        username = u.getUsername();
-        token = u.getToken();
+
+        service = new AndroidMasterServiceImpl(u);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class SentMessageFragment extends Fragment {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getSentMessage(username, token);
+            return service.getSentMessage();
         }
 
         @Override

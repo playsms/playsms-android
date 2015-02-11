@@ -24,11 +24,11 @@ import com.google.gson.Gson;
 
 public class LoginActivity extends Activity {
 
-    AndroidMasterService service = new AndroidMasterServiceImpl();
-    EditText mUsername, mPassword;
+    AndroidMasterService service;
+    EditText mUsername, mPassword, mServerUrl;
     LinearLayout layoutLoading;
     TextView textLoginError;
-    String username, password;
+    String username, password, serverUrl;
 
     public static final String PREFS = "playSMS";
     public static final String KEY_USER = "user";
@@ -58,6 +58,9 @@ public class LoginActivity extends Activity {
         TextView bannerSubTittle = (TextView) findViewById(R.id.banner_subtittle);
         bannerSubTittle.setTypeface(typefaceSubTittle);
 
+        mServerUrl = (EditText) findViewById(R.id.server_url);
+        mServerUrl.setTypeface(ralewayRegular);
+
         mUsername = (EditText) findViewById(R.id.username);
         mUsername.setTypeface(ralewayRegular);
 
@@ -69,24 +72,33 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                serverUrl = mServerUrl.getText().toString();
                 username = mUsername.getText().toString();
                 password = mPassword.getText().toString();
 
+                mServerUrl.setError(null);
                 mUsername.setError(null);
                 mPassword.setError(null);
 
+                if(serverUrl.isEmpty()){
+                    mServerUrl.setError("Required");
+                }
+
                 if(username.isEmpty()) {
                     mUsername.setError("Required");
-                } else if (password.isEmpty()) {
-                    mPassword.setError("Required");
-                } else if (username.isEmpty() && password.isEmpty()) {
-                    mUsername.setError("Required");
-                    mPassword.setError("Required");
-                } else {
-                    mUsername.setError(null);
-                    mPassword.setError(null);
-                    new Login().execute();
                 }
+
+                if (password.isEmpty()) {
+                    mPassword.setError("Required");
+                }
+
+                service = new AndroidMasterServiceImpl(serverUrl);
+
+                mServerUrl.setError(null);
+                mUsername.setError(null);
+                mPassword.setError(null);
+                new Login().execute();
+
             }
         });
     }
@@ -115,6 +127,7 @@ public class LoginActivity extends Activity {
                 textLoginError.setVisibility(View.INVISIBLE);
                 Gson gson = new Gson();
                 User user = new User();
+                user.setServerUrl(serverUrl);
                 user.setUsername(username);
                 user.setToken(loginHelper.getToken());
                 setUserCookies(KEY_USER, gson.toJson(user));
