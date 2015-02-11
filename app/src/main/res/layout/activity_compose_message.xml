@@ -4,17 +4,13 @@
     style="@style/DefaultLayout"
     tools:context="com.artivisi.android.playsms.ui.ComposeMessageActivity">
 
-    <FrameLayout style="@style/LayoutWrapContent">
+    <ProgressBar style="@style/LoadingBarHorizontal"
+        android:id="@+id/sending_msg" />
 
-        <ProgressBar style="@style/LoadingBarHorizontal"
-            android:id="@+id/sending_msg" />
-
-        <EditText style="@style/EditText"
-            android:layout_margin="@dimen/default_component_margin"
-            android:hint="To"
-            android:id="@+id/txt_msg_to"/>
-
-    </FrameLayout>
+    <EditText style="@style/EditText"
+        android:layout_margin="@dimen/default_component_margin"
+        android:hint="To"
+        android:id="@+id/txt_msg_to"/>
 
     <View style="@style/HorizontalDivider" />
 

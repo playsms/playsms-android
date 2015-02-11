@@ -14,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
  * Created by opaw on 2/5/15.
  */
 public class AndroidMasterServiceImpl implements AndroidMasterService {
-    private static final String BASE_URI = "http://my.textng.com/index.php?app=ws&";
+    private static final String PLAYSMS_URL = "http://my.textng.com";
+    private static final String BASE_URI = "/index.php?app=ws";
     RestTemplate restTemplate = new RestTemplate(true);
 
     public AndroidMasterServiceImpl() {
@@ -23,29 +24,32 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
 
     @Override
     public LoginHelper getToken(String username, String password) {
-        String url = BASE_URI + "u=" + username + "&p=" + password + "&op=get_token&format=json";
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
+        Log.i("URL : ", url);
         ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
         return responseEntity.getBody();
     }
 
     @Override
     public MessageHelper getSentMessage(String username, String token) {
-        String url = BASE_URI + "u=" + username + "&h=" + token + "&op=ds&format=json";
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + username + "&h=" + token + "&op=ds&format=json";
+        Log.i("URL : ", url);
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
         return responseEntity.getBody();
     }
 
     @Override
     public MessageHelper getInbox(String username, String token) {
-        String url = BASE_URI + "u=" + username + "&h=" + token + "&op=ix&format=json";
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + username + "&h=" + token + "&op=ix&format=json";
+        Log.i("URL : ", url);
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
         return responseEntity.getBody();
     }
 
     @Override
     public MessageHelper sendMessage(String username, String token, String to, String msg) {
-        String url = BASE_URI +
-                "u=" + username + "&h=" + token + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
+        String url = PLAYSMS_URL + BASE_URI +
+                "&u=" + username + "&h=" + token + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
         return responseEntity.getBody();
     }
