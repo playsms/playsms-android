@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
+import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
@@ -113,7 +114,10 @@ public class LoginActivity extends Activity {
             if(loginHelper.getError().equals("0")){
                 textLoginError.setVisibility(View.INVISIBLE);
                 Gson gson = new Gson();
-                setUserCookies(KEY_USER, gson.toJson(loginHelper));
+                User user = new User();
+                user.setUsername(username);
+                user.setToken(loginHelper.getToken());
+                setUserCookies(KEY_USER, gson.toJson(user));
                 showDashboard();
             }
         }
@@ -139,22 +143,5 @@ public class LoginActivity extends Activity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
-    }
-
-    protected <T> T getUserCookie(String key, Class<T> a) {
-        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS, Context.MODE_PRIVATE);
-
-        if (sharedPreferences == null) {
-            return null;
-        }
-
-        String data = sharedPreferences.getString(key, null);
-
-        if (data == null) {
-            return null;
-        } else {
-            Gson gson = new Gson();
-            return gson.fromJson(data, a);
-        }
     }
 }

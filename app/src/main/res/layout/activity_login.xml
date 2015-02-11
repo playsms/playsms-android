@@ -1,62 +1,75 @@
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DefaultLayout"
-    android:background="@color/blue_sky"
+    style="@style/LayoutMatchParent"
+    android:fillViewport="true"
     tools:context=".LoginActivity">
 
-    <LinearLayout style="@style/LayoutVertical"
-        android:layout_weight="2"
-        android:gravity="bottom">
+    <LinearLayout
+        style="@style/DefaultLayout"
+        android:background="@color/blue_sky_primary">
 
-        <TextView style="@style/BannerTittle"
-            android:text="@string/tittle"
-            android:id="@+id/banner_tittle" />
+        <LinearLayout style="@style/LayoutVertical"
+            android:layout_weight="3"
+            android:gravity="bottom">
 
-        <TextView style="@style/BannerSubTittle"
-            android:text="@string/subtittle"
-            android:id="@+id/banner_subtittle" />
-
-    </LinearLayout>
-
-    <FrameLayout style="@style/LayoutFillParent"
-        android:layout_weight="3">
-
-        <LinearLayout style="@style/LayoutHorizontal"
-            android:layout_gravity="bottom"
-            android:gravity="center"
-            android:id="@+id/layout_loading">
-
-            <ProgressBar style="@style/LayoutWrapContent" />
+            <TextView style="@style/BannerTittle"
+                android:text="@string/tittle"
+                android:id="@+id/banner_tittle" />
 
             <TextView style="@style/BannerSubTittle"
-                android:text="Loading, Please wait"
-                android:id="@+id/text_login_loading"/>
+                android:text="@string/subtittle"
+                android:id="@+id/banner_subtittle" />
 
         </LinearLayout>
-        <TextView style="@style/ErrorMessage"
-            android:layout_gravity="bottom|center_horizontal"
-            android:text="Bad Credential"
-            android:id="@+id/text_login_error" />
-    </FrameLayout>
 
-    <LinearLayout style="@style/LayoutVertical"
-        android:layout_weight="2"
-        android:gravity="bottom">
+        <FrameLayout style="@style/LayoutMatchParent"
+            android:layout_weight="5">
+
+            <LinearLayout style="@style/LayoutHorizontal"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:id="@+id/layout_loading">
+
+                <ProgressBar style="@style/LayoutWrapContent" />
+
+                <TextView style="@style/BannerSubTittle"
+                    android:text="Loading, Please wait"
+                    android:id="@+id/text_login_loading"/>
+
+            </LinearLayout>
+            <TextView style="@style/ErrorMessage"
+                android:layout_gravity="center"
+                android:text="Bad Credential"
+                android:id="@+id/text_login_error" />
+        </FrameLayout>
 
         <View style="@style/DashedLine"/>
-        <EditText style="@style/EditText"
-            android:hint="@string/username"
-            android:id="@+id/username" />
 
-        <EditText style="@style/EditText"
-            android:hint="@string/password"
-            android:inputType="textPassword"
-            android:id="@+id/password" />
+        <LinearLayout style="@style/LayoutVertical"
+            android:layout_weight="4">
 
-        <Button style="@style/Button"
-            android:text="@string/signin"
-            android:id="@+id/button_login"/>
+            <EditText style="@style/EditText"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/username"
+                android:id="@+id/username" />
 
+            <View style="@style/DashedLine" />
+
+            <EditText style="@style/EditText"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:id="@+id/password" />
+
+            <Button style="@style/ButtonSignIn"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/signin"
+                android:id="@+id/button_login"/>
+
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>
