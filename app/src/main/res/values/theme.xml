@@ -9,6 +9,7 @@
     <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/white</item>
         <item name="titleTextStyle">@style/CustomActionBarTitle</item>
+        <item name="subtitleTextStyle">@style/CustomActionBarSubtitle</item>
     </style>
 
     <style name="CustomActionBarTitle" parent="@android:style/TextAppearance.Holo.Widget.ActionMode.Title">
@@ -16,5 +17,9 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">@dimen/default_component_text</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="CustomActionBarSubtitle" parent="@android:style/TextAppearance.Holo.Widget.ActionMode.Title">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/actionbar_subtitle_text</item>
     </style>
 </resources>

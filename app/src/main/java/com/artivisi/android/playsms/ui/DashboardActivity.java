@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -20,10 +21,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
+import com.artivisi.android.playsms.domain.Credit;
+import com.artivisi.android.playsms.domain.User;
+import com.artivisi.android.playsms.service.AndroidMasterService;
+import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.fragment.InboxFragment;
 import com.artivisi.android.playsms.ui.fragment.SentMessageFragment;
+import com.google.gson.Gson;
 
 public class DashboardActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -34,7 +41,7 @@ public class DashboardActivity extends ActionBarActivity implements
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
+    private AndroidMasterService service = new AndroidMasterServiceImpl();
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -42,6 +49,8 @@ public class DashboardActivity extends ActionBarActivity implements
 
     private SentMessageFragment sentMessageFragment = new SentMessageFragment();
     private InboxFragment inboxFragment = new InboxFragment();
+    private User user;
+    private String mCredit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +59,10 @@ public class DashboardActivity extends ActionBarActivity implements
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = "Inbox";
-
+        user = getUserCookie(LoginActivity.KEY_USER, User.class);
+        mTitle = user.getUsername();
+        mCredit = "Checking Credit";
+        new GetCredit().execute();
         ImageButton btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,18 +95,15 @@ public class DashboardActivity extends ActionBarActivity implements
 //                fragmentTransaction.replace(R.id.container, newMessageFragment);
 //                break;
             case 0:
-                mTitle = "Inbox";
                 fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
             case 1:
-                mTitle = "Sent";
                 fragmentTransaction.replace(R.id.container, sentMessageFragment);
                 break;
             case 2:
                 signout();
                 break;
             default:
-                mTitle = "Inbox";
                 fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
         }
@@ -112,8 +120,7 @@ public class DashboardActivity extends ActionBarActivity implements
                 mTitle = getString(R.string.title_section2);
                 break;
             case 3:
-//                mTitle = getString(R.string.title_section3);
-//                signout();
+                mTitle = getString(R.string.title_section3);
                 break;
         }
     }
@@ -133,6 +140,7 @@ public class DashboardActivity extends ActionBarActivity implements
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+        actionBar.setSubtitle(mCredit);
     }
 
 
@@ -209,6 +217,46 @@ public class DashboardActivity extends ActionBarActivity implements
             super.onAttach(activity);
 //            ((DashboardActivity) activity).onSectionAttached(
 //                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    public class GetCredit extends AsyncTask<Void, Void, Credit>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            getSupportActionBar().setSubtitle("Checking Credit");
+        }
+
+        @Override
+        protected Credit doInBackground(Void... params) {
+            return service.getCredit(user.getUsername(), user.getToken());
+        }
+
+        @Override
+         protected void onPostExecute(Credit credit) {
+            super.onPostExecute(credit);
+            mCredit = credit.getCredit();
+            if(credit.getError().equals("0")){
+                getSupportActionBar().setSubtitle(mCredit);
+            }
+        }
+    }
+
+    protected <T> T getUserCookie(String key, Class<T> a) {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS, Context.MODE_PRIVATE);
+
+        if (sharedPreferences == null) {
+            return null;
+        }
+
+        String data = sharedPreferences.getString(key, null);
+
+        if (data == null) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            return gson.fromJson(data, a);
         }
     }
 
