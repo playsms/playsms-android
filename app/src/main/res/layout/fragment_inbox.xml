@@ -1,13 +1,21 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/DefaultLayout"
     tools:context="com.artivisi.android.playsms.ui.fragment.InboxFragment">
 
     <ProgressBar style="@style/LoadingBar"
-        android:id="@+id/inbox_loading_bar"/>
+        android:id="@+id/inbox_loading_bar"
+        android:visibility="gone"/>
+
+    <TextView style="@style/Banner"
+        android:text="Empty"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:id="@+id/inbox_empty" />
 
     <ListView style="@style/MessageListView"
-        android:id="@+id/list_inbox"/>
+        android:id="@+id/list_inbox"
+        android:visibility="gone"/>
 
-</LinearLayout>
+</FrameLayout>

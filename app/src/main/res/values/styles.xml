@@ -54,11 +54,12 @@
 
     <!--Banner-->
     <style name="Banner" parent="DefaultComponentLayout">
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/grey_dark</item>
         <item name="android:textStyle">bold|italic</item>
+        <item name="android:textSize">@dimen/abc_text_size_large_material</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/banner_bg</item>
+        <!--<item name="android:background">@drawable/banner_bg</item>-->
     </style>
 
     <style name="BannerTittle" parent="LayoutWrapContent">

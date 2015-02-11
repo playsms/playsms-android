@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
@@ -50,6 +51,7 @@ public class SentMessageFragment extends Fragment {
     private ProgressBar progressBar;
     private ListView lvSentMessage;
     private View rootView;
+    private TextView mEmptySentMsg;
     private AndroidMasterService service = new AndroidMasterServiceImpl();
 
     /**
@@ -96,7 +98,12 @@ public class SentMessageFragment extends Fragment {
         progressBar = (ProgressBar) rootView.findViewById(R.id.sent_msg_loading_bar);
         progressBar.setVisibility(View.VISIBLE);
 
+        mEmptySentMsg = (TextView) rootView.findViewById(R.id.sent_msg_empty);
+        mEmptySentMsg.setVisibility(View.GONE);
+
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
+        lvSentMessage.setVisibility(View.GONE);
+
         new GetSentMessage().execute();
         return rootView;
     }
@@ -146,6 +153,8 @@ public class SentMessageFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
+            mEmptySentMsg.setVisibility(View.GONE);
+            lvSentMessage.setVisibility(View.GONE);
         }
 
         @Override
@@ -159,13 +168,13 @@ public class SentMessageFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
-                    Toast.makeText(getActivity(), messageHelper.getError(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getActivity(), messageHelper.getErrorString(), Toast.LENGTH_SHORT).show();
-                    if(messageHelper.getStatus().equals("400")){
-                        Toast.makeText(getActivity(), "TIDAK ADA PESAN TERKIRIM", Toast.LENGTH_SHORT).show();
+                    if(messageHelper.getError().equals("400")){
+                        mEmptySentMsg.setVisibility(View.VISIBLE);
+                        lvSentMessage.setVisibility(View.GONE);
                     }
                 }
             } else {
+                lvSentMessage.setVisibility(View.VISIBLE);
                 lvSentMessage.setAdapter(new SentMessageAdapter(getActivity(), messageHelper.getData()));
             }
         }

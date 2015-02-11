@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
@@ -51,6 +52,7 @@ public class InboxFragment extends Fragment {
     private ProgressBar progressBar;
     private ListView lvInbox;
     private View rootView;
+    private TextView mEmptyInbox;
     private AndroidMasterService service = new AndroidMasterServiceImpl();
 
     /**
@@ -99,7 +101,12 @@ public class InboxFragment extends Fragment {
         progressBar = (ProgressBar) rootView.findViewById(R.id.inbox_loading_bar);
         progressBar.setVisibility(View.VISIBLE);
 
+        mEmptyInbox = (TextView) rootView.findViewById(R.id.inbox_empty);
+        mEmptyInbox.setVisibility(View.GONE);
+
         lvInbox = (ListView) rootView.findViewById(R.id.list_inbox);
+        lvInbox.setVisibility(View.GONE);
+
         new GetInbox().execute();
         return rootView;
     }
@@ -148,6 +155,8 @@ public class InboxFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
+            mEmptyInbox.setVisibility(View.GONE);
+            lvInbox.setVisibility(View.GONE);
         }
 
         @Override
@@ -161,13 +170,13 @@ public class InboxFragment extends Fragment {
             progressBar.setVisibility(View.GONE);
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
-                    Toast.makeText(getActivity(), messageHelper.getError(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getActivity(), messageHelper.getErrorString(), Toast.LENGTH_SHORT).show();
-                    if(messageHelper.getStatus().equals("501")){
-                        Toast.makeText(getActivity(), "TIDAK ADA INBOX", Toast.LENGTH_SHORT).show();
+                    if(messageHelper.getError().equals("501")){
+                        mEmptyInbox.setVisibility(View.VISIBLE);
+                        lvInbox.setVisibility(View.GONE);
                     }
                 }
             } else {
+                lvInbox.setVisibility(View.VISIBLE);
                 lvInbox.setAdapter(new InboxAdapter(getActivity(), messageHelper.getData()));
             }
         }
