@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultLayout"
+    tools:context="com.artivisi.android.playsms.ui.ComposeMessageActivity">
+
+    <FrameLayout style="@style/LayoutWrapContent">
+
+        <ProgressBar style="@style/LoadingBarHorizontal"
+            android:id="@+id/sending_msg" />
+
+        <EditText style="@style/EditText"
+            android:layout_margin="@dimen/default_component_margin"
+            android:hint="To"
+            android:id="@+id/txt_msg_to"/>
+
+    </FrameLayout>
+
+    <View style="@style/HorizontalDivider" />
+
+    <EditText style="@style/EditText"
+        android:layout_margin="@dimen/default_component_margin"
+        android:singleLine="false"
+        android:layout_height="fill_parent"
+        android:gravity="top"
+        android:hint="Message"
+        android:id="@+id/txt_msg"/>
+</LinearLayout>
