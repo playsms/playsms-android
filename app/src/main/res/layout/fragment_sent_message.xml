@@ -1,0 +1,13 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultLayout"
+    tools:context="com.artivisi.android.playsms.ui.fragment.SentMessageFragment">
+
+    <ProgressBar style="@style/LoadingBar"
+        android:id="@+id/sent_msg_loading_bar"/>
+
+    <ListView style="@style/MessageListView"
+        android:id="@+id/list_sent_msg"/>
+
+</LinearLayout>
