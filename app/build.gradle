@@ -4,8 +4,6 @@ repositories {
     maven {
         url 'http://repo.spring.io/milestone'
     }
-    mavenCentral()
-    mavenLocal()
 }
 
 android {
