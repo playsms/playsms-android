@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <gradient
+                        android:endColor="@android:color/transparent"
+                        android:gradientRadius="50"
+                        android:startColor="@android:color/black"
+                        android:type="radial" />
+                </shape>
+            </item>
+            <item
+                android:bottom="@dimen/circular_btn_padding"
+                android:top="@dimen/circular_btn_padding"
+                android:left="@dimen/circular_btn_padding"
+                android:right="@dimen/circular_btn_padding">
+                <shape android:shape="oval">
+                    <solid android:color="@color/grey_shadow" />
+                    <stroke
+                        android:width="@dimen/line_width"
+                        android:color="@color/grey_shadow" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <gradient
+                        android:endColor="@android:color/transparent"
+                        android:gradientRadius="50"
+                        android:startColor="@android:color/black"
+                        android:type="radial" />
+                </shape>
+            </item>
+            <item
+                android:bottom="@dimen/circular_btn_padding"
+                android:top="@dimen/circular_btn_padding"
+                android:left="@dimen/circular_btn_padding"
+                android:right="@dimen/circular_btn_padding">
+                <shape android:shape="oval">
+                    <solid android:color="@color/white" />
+                    <stroke
+                        android:width="@dimen/line_width"
+                        android:color="@color/grey_shadow" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>

@@ -24,7 +24,7 @@
 
     <style name="LayoutVertical">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
@@ -48,6 +48,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/default_component_margin</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:padding">@dimen/default_component_padding</item>
     </style>
 
@@ -78,6 +79,83 @@
         <item name="android:textSize">@dimen/banner_subtittle</item>
     </style>
 
+    <style name="MenuListView">
+        <item name="android:layout_width">@dimen/navigation_drawer_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:choiceMode">singleChoice</item>
+        <item name="android:divider">@drawable/line_horizontal</item>
+        <item name="android:dividerHeight">@dimen/line_width</item>
+        <item name="android:background">@color/white_milk</item>
+    </style>
+
+    <style name="MenuListLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/menu_list_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@drawable/menu_bg</item>
+    </style>
+
+    <style name="MenuListTittle" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:textSize">@dimen/default_component_text</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MenuListIcon" parent="LayoutWrapContent">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/default_component_padding</item>
+        <item name="android:paddingTop">@dimen/default_component_padding</item>
+        <item name="android:paddingBottom">@dimen/default_component_padding</item>
+    </style>
+
+    <style name="MessageListView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:divider">@drawable/line_horizontal</item>
+        <item name="android:dividerHeight">@dimen/line_width</item>
+        <item name="android:background">@color/grey_light</item>
+    </style>
+
+    <style name="MessageListLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white_milk</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="MessageTittle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">@dimen/default_component_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/sent_message_text_tittle</item>
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="MessageSubtittle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">@dimen/default_component_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/sent_message_text_subtittle</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="MessageDate">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">@dimen/default_component_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/sent_message_text_date</item>
+        <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:singleLine">false</item>
+    </style>
     <!--Line-->
     <style name="DashedLine">
         <item name="android:layout_width">match_parent</item>
@@ -88,18 +166,57 @@
 
     <!--EditText-->
     <style name="EditText" parent="DefaultComponentLayout">
-        <item name="android:background">@drawable/edittext_bg</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/blue_navy_primary</item>
         <item name="android:textSize">@dimen/edittext_text</item>
         <item name="android:singleLine">true</item>
     </style>
 
     <!--Button-->
-    <style name="Button" parent="DefaultComponentLayout">
-        <item name="android:background">@drawable/button_blue_selector</item>
+    <style name="ButtonSignIn">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/default_component_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/btn_login_bg</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/button_text</item>
+        <item name="android:textSize">@dimen/default_component_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!--Line-->
+    <style name="HorizontalDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/line_width</item>
+        <item name="android:background">@drawable/line_horizontal</item>
+    </style>
+
+    <style name="VerticalDivider">
+        <item name="android:layout_width">@dimen/line_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/line_vertical</item>
+    </style>
+
+    <style name="LoadingBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/default_component_margin</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="LoadingBarHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="CircularButton">
+        <item name="android:layout_width">@dimen/circular_btn_size</item>
+        <item name="android:layout_height">@dimen/circular_btn_size</item>
+        <item name="android:layout_margin">@dimen/default_component_margin</item>
+        <item name="android:layout_gravity">bottom|right</item>
+        <item name="android:background">@drawable/btn_circle_bg</item>
     </style>
 </resources>

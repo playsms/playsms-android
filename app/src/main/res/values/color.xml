@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="blue_sky">#bed4df</color>
+    <color name="blue">#4285F4</color>
+    <color name="blue_sky_primary">#bed4df</color>
+    <color name="blue_sky_secondary">#9EC4CD</color>
     <color name="blue_navy_primary">#323e4e</color>
     <color name="blue_navy_secondary">#485970</color>
+    <color name="green_light">#CCDFC9</color>
+    <color name="pink_soft">#D66561</color>
+    <color name="cream">#ECC17C</color>
+    <color name="yellow_bright">#E6E5AF</color>
     <color name="grey">#8b99a0</color>
+    <color name="grey_dark">#404A4C</color>
+    <color name="grey_light">#F2F1E9</color>
+    <color name="grey_shadow">#E5E3DA</color>
+    <color name="grey_soft">#414141</color>
+    <color name="white_milk">#FCFCF7</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="transparent">#00000000</color>
 </resources>
