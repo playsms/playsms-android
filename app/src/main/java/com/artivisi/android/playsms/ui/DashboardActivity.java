@@ -1,13 +1,15 @@
 package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,12 +17,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.artivisi.android.playsms.R;
+import com.artivisi.android.playsms.ui.fragment.InboxFragment;
+import com.artivisi.android.playsms.ui.fragment.SentMessageFragment;
 
-
-public class DashboardActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class DashboardActivity extends ActionBarActivity implements
+        NavigationDrawerFragment.NavigationDrawerCallbacks,
+        SentMessageFragment.OnFragmentInteractionListener,
+        InboxFragment.OnFragmentInteractionListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -32,6 +40,9 @@ public class DashboardActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private SentMessageFragment sentMessageFragment = new SentMessageFragment();
+    private InboxFragment inboxFragment = new InboxFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +50,16 @@ public class DashboardActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        mTitle = "Inbox";
+
+        ImageButton btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
+        btnComposeMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent composeMsg = new Intent(DashboardActivity.this, ComposeMessageActivity.class);
+                startActivity(composeMsg);
+            }
+        });
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -50,10 +70,37 @@ public class DashboardActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+//        fragmentManager
+//                .beginTransaction()
+//                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+//                .disallowAddToBackStack()
+//                .commit();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (position){
+//            case 0:
+//                mTitle = "Compose";
+//                fragmentTransaction.replace(R.id.container, newMessageFragment);
+//                break;
+            case 0:
+                mTitle = "Inbox";
+                fragmentTransaction.replace(R.id.container, inboxFragment);
+                break;
+            case 1:
+                mTitle = "Sent";
+                fragmentTransaction.replace(R.id.container, sentMessageFragment);
+                break;
+            case 2:
+                signout();
+                break;
+            default:
+                mTitle = "Inbox";
+                fragmentTransaction.replace(R.id.container, inboxFragment);
+                break;
+        }
+        fragmentTransaction.commit();
+        fragmentTransaction.disallowAddToBackStack();
     }
 
     public void onSectionAttached(int number) {
@@ -66,9 +113,19 @@ public class DashboardActivity extends ActionBarActivity
                 break;
             case 3:
 //                mTitle = getString(R.string.title_section3);
-                signout();
+//                signout();
                 break;
         }
+    }
+
+    public void signout(){
+        SharedPreferences sharedpreferences = getSharedPreferences (LoginActivity.PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.clear();
+        editor.commit();
+        Intent goToLogin = new Intent(this, LoginActivity.class);
+        startActivity(goToLogin);
+        finish();
     }
 
     public void restoreActionBar() {
@@ -87,6 +144,7 @@ public class DashboardActivity extends ActionBarActivity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.dashboard, menu);
             restoreActionBar();
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -107,14 +165,9 @@ public class DashboardActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void signout(){
-        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.clear();
-        editor.commit();
-        Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(loginActivity);
-        finish();
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**
@@ -146,14 +199,16 @@ public class DashboardActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+
             return rootView;
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((DashboardActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+//            ((DashboardActivity) activity).onSectionAttached(
+//                    getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
 

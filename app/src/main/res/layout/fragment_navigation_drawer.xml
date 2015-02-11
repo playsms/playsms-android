@@ -1,9 +1,4 @@
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:choiceMode="singleChoice"
-    android:divider="@color/grey"
-    android:dividerHeight="@dimen/line_width"
-    android:background="@color/blue_sky"
+    style="@style/MenuListView"
     tools:context="com.artivisi.android.playsms.ui.NavigationDrawerFragment" />
