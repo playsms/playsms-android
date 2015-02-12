@@ -30,7 +30,7 @@ public class LoginActivity extends Activity {
     AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword, mServerUrl;
     LinearLayout layoutLoading;
-    TextView textLoginError, txtNoNetwork, txtUrlError;
+    TextView textLoginError, txtNoNetwork, txtUrlError, txtServerError;
     String username, password, serverUrl;
 
     public static final String PREFS = "playSMS";
@@ -60,6 +60,10 @@ public class LoginActivity extends Activity {
         txtUrlError.setVisibility(View.INVISIBLE);
         txtUrlError.setTypeface(typefaceSubTittle);
 
+        txtServerError = (TextView) findViewById(R.id.text_server_error);
+        txtServerError.setVisibility(View.INVISIBLE);
+        txtServerError.setTypeface(typefaceSubTittle);
+
         TextView loadingText = (TextView) findViewById(R.id.text_login_loading);
         loadingText.setTypeface(typefaceSubTittle);
 
@@ -87,6 +91,7 @@ public class LoginActivity extends Activity {
 
                     txtNoNetwork.setVisibility(View.INVISIBLE);
                     txtUrlError.setVisibility(View.INVISIBLE);
+                    txtServerError.setVisibility(View.INVISIBLE);
 
                     serverUrl = mServerUrl.getText().toString();
                     username = mUsername.getText().toString();
@@ -142,7 +147,6 @@ public class LoginActivity extends Activity {
             try {
                 return service.getToken(serverUrl, username, password);
             } catch (Exception e) {
-                Log.i("dadaw", e.getMessage());
                 return null;
             }
         }
@@ -151,18 +155,22 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(LoginHelper loginHelper) {
             super.onPostExecute(loginHelper);
             layoutLoading.setVisibility(View.INVISIBLE);
-            if(loginHelper.getError().equals("100")){
-                textLoginError.setVisibility(View.VISIBLE);
-            }
-            if(loginHelper.getError().equals("0")){
-                textLoginError.setVisibility(View.INVISIBLE);
-                Gson gson = new Gson();
-                User user = new User();
-                user.setServerUrl(serverUrl);
-                user.setUsername(username);
-                user.setToken(loginHelper.getToken());
-                setUserCookies(KEY_USER, gson.toJson(user));
-                showDashboard();
+            if(loginHelper == null){
+                txtServerError.setVisibility(View.VISIBLE);
+            } else {
+                if(loginHelper.getError().equals("100")){
+                    textLoginError.setVisibility(View.VISIBLE);
+                }
+                if(loginHelper.getError().equals("0")){
+                    textLoginError.setVisibility(View.INVISIBLE);
+                    Gson gson = new Gson();
+                    User user = new User();
+                    user.setServerUrl(serverUrl);
+                    user.setUsername(username);
+                    user.setToken(loginHelper.getToken());
+                    setUserCookies(KEY_USER, gson.toJson(user));
+                    showDashboard();
+                }
             }
         }
     }
