@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 
 public class LoginActivity extends Activity {
 
-    AndroidMasterService service;
+    AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword, mServerUrl;
     LinearLayout layoutLoading;
     TextView textLoginError;
@@ -80,25 +80,25 @@ public class LoginActivity extends Activity {
                 mUsername.setError(null);
                 mPassword.setError(null);
 
-                if(serverUrl.isEmpty()){
-                    mServerUrl.setError("Required");
+                if(serverUrl.isEmpty() || username.isEmpty() || password.isEmpty()){
+                    if(serverUrl.isEmpty()) {
+                        mServerUrl.setError("Required");
+                        mServerUrl.setFocusable(true);
+                    }
+                    if(username.isEmpty()) {
+                        mUsername.setError("Required");
+                        mUsername.setFocusable(true);
+                    }
+                    if (password.isEmpty()) {
+                        mPassword.setError("Required");
+                        mPassword.setFocusable(true);
+                    }
+                } else {
+                    mServerUrl.setError(null);
+                    mUsername.setError(null);
+                    mPassword.setError(null);
+                    new Login().execute();
                 }
-
-                if(username.isEmpty()) {
-                    mUsername.setError("Required");
-                }
-
-                if (password.isEmpty()) {
-                    mPassword.setError("Required");
-                }
-
-                service = new AndroidMasterServiceImpl(serverUrl);
-
-                mServerUrl.setError(null);
-                mUsername.setError(null);
-                mPassword.setError(null);
-                new Login().execute();
-
             }
         });
     }
@@ -113,7 +113,7 @@ public class LoginActivity extends Activity {
 
         @Override
         protected LoginHelper doInBackground(Void... params) {
-            return service.getToken(username, password);
+            return service.getToken(serverUrl, username, password);
         }
 
         @Override

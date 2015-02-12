@@ -23,26 +23,28 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
 
 
     private User user;
-    private String PLAYSMS_URL;
     RestTemplate restTemplate = new RestTemplate(true);
+    private String PLAYSMS_URL;
 
-    public AndroidMasterServiceImpl(String serverUrl){
-        PLAYSMS_URL = serverUrl;
+    public AndroidMasterServiceImpl(){
         this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        ( (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout( 60 * 1000 );
     }
 
     public AndroidMasterServiceImpl(User user) {
         this.user = user;
         PLAYSMS_URL = user.getServerUrl();
         this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        ( (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout( 60 * 1000 );
     }
 
 
     private static final String BASE_URI = "/index.php?app=ws";
 
     @Override
-    public LoginHelper getToken(String username, String password) {
-        String url = PLAYSMS_URL + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
+    public LoginHelper getToken(String urlServer, String username, String password) {
+        String url = urlServer + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
+        Log.i("URL : ", url);
         ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
         return responseEntity.getBody();
     }
