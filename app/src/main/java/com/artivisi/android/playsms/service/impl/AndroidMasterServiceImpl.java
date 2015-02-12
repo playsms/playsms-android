@@ -1,7 +1,5 @@
 package com.artivisi.android.playsms.service.impl;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.artivisi.android.playsms.domain.Credit;
@@ -9,18 +7,10 @@ import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
-import com.artivisi.android.playsms.ui.LoginActivity;
-import com.google.gson.Gson;
 
-import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.SocketTimeoutException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by opaw on 2/5/15.
@@ -50,6 +40,7 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     @Override
     public LoginHelper getToken(String urlServer, String username, String password) throws Exception{
         String url = urlServer + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
+        Log.d("URL : ", url);
         try {
             ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
             return responseEntity.getBody();
@@ -78,6 +69,32 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
                 "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
         return responseEntity.getBody();
+    }
+
+    @Override
+    public String pollInbox(String id) {
+        String url = PLAYSMS_URL + BASE_URI
+                + "&u=" + user.getUsername()
+                + "&h=" + user.getToken()
+                + "&op=ix"
+                + "&c=1"
+                + "&last=" + id
+                + "&format=json";
+        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+        return responseEntity.getBody().getData().get(0).getId();
+    }
+
+    @Override
+    public String pollSentMessage(String smslogId) {
+        String url = PLAYSMS_URL + BASE_URI
+                + "&u=" + user.getUsername()
+                + "&h=" + user.getToken()
+                + "&op=ds"
+                + "&c=1"
+                + "&last=" + smslogId
+                + "&format=json";
+        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+        return responseEntity.getBody().getData().get(0).getSmslogId();
     }
 
     @Override

@@ -7,15 +7,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
@@ -44,12 +42,10 @@ public class SentMessageFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private String username;
-    private String token;
-
     private OnFragmentInteractionListener mListener;
     private ProgressBar progressBar;
     private ListView lvSentMessage;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private View rootView;
     private TextView mEmptySentMsg;
     private AndroidMasterService service;
@@ -93,6 +89,7 @@ public class SentMessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         rootView = inflater.inflate(R.layout.fragment_sent_message, container, false);
 
         progressBar = (ProgressBar) rootView.findViewById(R.id.sent_msg_loading_bar);
@@ -104,9 +101,21 @@ public class SentMessageFragment extends Fragment {
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
         lvSentMessage.setVisibility(View.GONE);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
+        swipeRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_red_light,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_light);
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
         new GetSentMessage().execute();
         return rootView;
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

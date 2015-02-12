@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
@@ -147,6 +146,7 @@ public class LoginActivity extends Activity {
             try {
                 return service.getToken(serverUrl, username, password);
             } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
                 return null;
             }
         }

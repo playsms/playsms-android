@@ -17,7 +17,6 @@ import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
-import com.artivisi.android.playsms.ui.adapter.InboxAdapter;
 import com.google.gson.Gson;
 
 public class ComposeMessageActivity extends ActionBarActivity {

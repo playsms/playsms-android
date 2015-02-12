@@ -7,10 +7,16 @@
     <ProgressBar style="@style/LoadingBar"
         android:id="@+id/sent_msg_loading_bar" />
 
-    <ListView style="@style/MessageListView"
-        android:id="@+id/list_sent_msg"
-        android:visibility="gone" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_list_sent_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <ListView style="@style/MessageListView"
+            android:id="@+id/list_sent_msg"
+            android:visibility="gone" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
     <TextView style="@style/Banner"
         android:text="Empty"
         android:layout_gravity="center"

@@ -11,10 +11,6 @@ import android.widget.TextView;
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Message;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**

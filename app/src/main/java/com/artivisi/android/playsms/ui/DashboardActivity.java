@@ -18,10 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
