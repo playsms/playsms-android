@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +30,7 @@ public class LoginActivity extends Activity {
     AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword, mServerUrl;
     LinearLayout layoutLoading;
-    TextView textLoginError, txtNoNetwork;
+    TextView textLoginError, txtNoNetwork, txtUrlError;
     String username, password, serverUrl;
 
     public static final String PREFS = "playSMS";
@@ -54,6 +55,10 @@ public class LoginActivity extends Activity {
         txtNoNetwork = (TextView) findViewById(R.id.text_no_network);
         txtNoNetwork.setVisibility(View.INVISIBLE);
         txtNoNetwork.setTypeface(typefaceSubTittle);
+
+        txtUrlError = (TextView) findViewById(R.id.text_url_error);
+        txtUrlError.setVisibility(View.INVISIBLE);
+        txtUrlError.setTypeface(typefaceSubTittle);
 
         TextView loadingText = (TextView) findViewById(R.id.text_login_loading);
         loadingText.setTypeface(typefaceSubTittle);
@@ -81,6 +86,7 @@ public class LoginActivity extends Activity {
                 if(isNetworkAvailable()){
 
                     txtNoNetwork.setVisibility(View.INVISIBLE);
+                    txtUrlError.setVisibility(View.INVISIBLE);
 
                     serverUrl = mServerUrl.getText().toString();
                     username = mUsername.getText().toString();
@@ -104,10 +110,16 @@ public class LoginActivity extends Activity {
                             mPassword.setFocusable(true);
                         }
                     } else {
-                        mServerUrl.setError(null);
-                        mUsername.setError(null);
-                        mPassword.setError(null);
-                        new Login().execute();
+                        if (serverUrl.contains(".") && serverUrl.contains("http://") || serverUrl.contains("https://")){
+                            mServerUrl.setError(null);
+                            mUsername.setError(null);
+                            mPassword.setError(null);
+                            new Login().execute();
+                        } else {
+                            txtUrlError.setVisibility(View.VISIBLE);
+                            mServerUrl.setError("Invalid");
+                            mServerUrl.setFocusable(true);
+                        }
                     }
                 } else {
                     txtNoNetwork.setVisibility(View.VISIBLE);
@@ -121,12 +133,18 @@ public class LoginActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             textLoginError.setVisibility(View.INVISIBLE);
+            txtUrlError.setVisibility(View.INVISIBLE);
             layoutLoading.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected LoginHelper doInBackground(Void... params) {
-            return service.getToken(serverUrl, username, password);
+            try {
+                return service.getToken(serverUrl, username, password);
+            } catch (Exception e) {
+                Log.i("dadaw", e.getMessage());
+                return null;
+            }
         }
 
         @Override

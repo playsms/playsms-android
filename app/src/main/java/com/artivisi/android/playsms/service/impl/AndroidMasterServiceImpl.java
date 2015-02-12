@@ -12,9 +12,15 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.ui.LoginActivity;
 import com.google.gson.Gson;
 
+import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.SocketTimeoutException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by opaw on 2/5/15.
@@ -42,11 +48,14 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     private static final String BASE_URI = "/index.php?app=ws";
 
     @Override
-    public LoginHelper getToken(String urlServer, String username, String password) {
+    public LoginHelper getToken(String urlServer, String username, String password) throws Exception{
         String url = urlServer + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
-        Log.i("URL : ", url);
-        ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
