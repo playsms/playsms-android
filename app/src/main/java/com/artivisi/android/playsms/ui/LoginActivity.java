@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +29,7 @@ public class LoginActivity extends Activity {
     AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword, mServerUrl;
     LinearLayout layoutLoading;
-    TextView textLoginError;
+    TextView textLoginError, txtNoNetwork;
     String username, password, serverUrl;
 
     public static final String PREFS = "playSMS";
@@ -48,6 +50,10 @@ public class LoginActivity extends Activity {
         textLoginError = (TextView) findViewById(R.id.text_login_error);
         textLoginError.setVisibility(View.INVISIBLE);
         textLoginError.setTypeface(typefaceSubTittle);
+
+        txtNoNetwork = (TextView) findViewById(R.id.text_no_network);
+        txtNoNetwork.setVisibility(View.INVISIBLE);
+        txtNoNetwork.setTypeface(typefaceSubTittle);
 
         TextView loadingText = (TextView) findViewById(R.id.text_login_loading);
         loadingText.setTypeface(typefaceSubTittle);
@@ -72,32 +78,39 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                serverUrl = mServerUrl.getText().toString();
-                username = mUsername.getText().toString();
-                password = mPassword.getText().toString();
+                if(isNetworkAvailable()){
 
-                mServerUrl.setError(null);
-                mUsername.setError(null);
-                mPassword.setError(null);
+                    txtNoNetwork.setVisibility(View.INVISIBLE);
 
-                if(serverUrl.isEmpty() || username.isEmpty() || password.isEmpty()){
-                    if(serverUrl.isEmpty()) {
-                        mServerUrl.setError("Required");
-                        mServerUrl.setFocusable(true);
-                    }
-                    if(username.isEmpty()) {
-                        mUsername.setError("Required");
-                        mUsername.setFocusable(true);
-                    }
-                    if (password.isEmpty()) {
-                        mPassword.setError("Required");
-                        mPassword.setFocusable(true);
-                    }
-                } else {
+                    serverUrl = mServerUrl.getText().toString();
+                    username = mUsername.getText().toString();
+                    password = mPassword.getText().toString();
+
                     mServerUrl.setError(null);
                     mUsername.setError(null);
                     mPassword.setError(null);
-                    new Login().execute();
+
+                    if(serverUrl.isEmpty() || username.isEmpty() || password.isEmpty()){
+                        if(serverUrl.isEmpty()) {
+                            mServerUrl.setError("Required");
+                            mServerUrl.setFocusable(true);
+                        }
+                        if(username.isEmpty()) {
+                            mUsername.setError("Required");
+                            mUsername.setFocusable(true);
+                        }
+                        if (password.isEmpty()) {
+                            mPassword.setError("Required");
+                            mPassword.setFocusable(true);
+                        }
+                    } else {
+                        mServerUrl.setError(null);
+                        mUsername.setError(null);
+                        mPassword.setError(null);
+                        new Login().execute();
+                    }
+                } else {
+                    txtNoNetwork.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -156,5 +169,12 @@ public class LoginActivity extends Activity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

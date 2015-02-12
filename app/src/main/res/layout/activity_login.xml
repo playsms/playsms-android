@@ -40,6 +40,10 @@
             </LinearLayout>
             <TextView style="@style/ErrorMessage"
                 android:layout_gravity="center"
+                android:text="No Internet Connection"
+                android:id="@+id/text_no_network" />
+            <TextView style="@style/ErrorMessage"
+                android:layout_gravity="center"
                 android:text="Bad Credential"
                 android:id="@+id/text_login_error" />
         </FrameLayout>
