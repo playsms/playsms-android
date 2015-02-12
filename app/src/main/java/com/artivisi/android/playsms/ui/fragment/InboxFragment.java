@@ -7,11 +7,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.artivisi.android.playsms.R;
@@ -21,6 +21,7 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.LoginActivity;
 import com.artivisi.android.playsms.ui.adapter.InboxAdapter;
+import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 import com.google.gson.Gson;
 
 /**
@@ -46,11 +47,12 @@ public class InboxFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private ProgressBar progressBar;
     private ListView lvInbox;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private View rootView;
     private TextView mEmptyInbox;
     private AndroidMasterService service;
+    private PlaySmsDb playSmsDb;
 
     /**
      * Use this factory method to create a new instance of
@@ -78,12 +80,12 @@ public class InboxFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        ((ActionBarActivity) getActivity()).supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        playSmsDb = new PlaySmsDb(getActivity());
 
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(u);
@@ -95,16 +97,27 @@ public class InboxFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_inbox, container, false);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.inbox_loading_bar);
-        progressBar.setVisibility(View.VISIBLE);
 
         mEmptyInbox = (TextView) rootView.findViewById(R.id.inbox_empty);
         mEmptyInbox.setVisibility(View.GONE);
 
         lvInbox = (ListView) rootView.findViewById(R.id.list_inbox);
-        lvInbox.setVisibility(View.GONE);
+        lvInbox.setVisibility(View.VISIBLE);
+        lvInbox.setAdapter(new InboxAdapter(getActivity(), playSmsDb.getAllInbox()));
 
-        new GetInbox().execute();
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_inbox);
+        swipeRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_red_light,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_light);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                new GetInbox().execute();
+            }
+        });
+
         return rootView;
     }
 
@@ -151,7 +164,6 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
             mEmptyInbox.setVisibility(View.GONE);
             lvInbox.setVisibility(View.GONE);
         }
@@ -164,7 +176,7 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            progressBar.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
                     if(messageHelper.getError().equals("501")){

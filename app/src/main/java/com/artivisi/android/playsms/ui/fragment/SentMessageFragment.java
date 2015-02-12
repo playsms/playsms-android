@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.artivisi.android.playsms.R;
@@ -22,6 +21,7 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.LoginActivity;
 import com.artivisi.android.playsms.ui.adapter.SentMessageAdapter;
+import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 import com.google.gson.Gson;
 
 /**
@@ -43,12 +43,12 @@ public class SentMessageFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private ProgressBar progressBar;
     private ListView lvSentMessage;
     private SwipeRefreshLayout swipeRefreshLayout;
     private View rootView;
     private TextView mEmptySentMsg;
     private AndroidMasterService service;
+    private PlaySmsDb playSmsDb;
 
     /**
      * Use this factory method to create a new instance of
@@ -80,9 +80,12 @@ public class SentMessageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        User u = getUserCookie(LoginActivity.KEY_USER, User.class);
 
+        playSmsDb = new PlaySmsDb(getActivity());
+
+        User u = getUserCookie(LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(u);
+
     }
 
     @Override
@@ -92,27 +95,24 @@ public class SentMessageFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_sent_message, container, false);
 
-        progressBar = (ProgressBar) rootView.findViewById(R.id.sent_msg_loading_bar);
-        progressBar.setVisibility(View.VISIBLE);
-
         mEmptySentMsg = (TextView) rootView.findViewById(R.id.sent_msg_empty);
         mEmptySentMsg.setVisibility(View.GONE);
 
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
-        lvSentMessage.setVisibility(View.GONE);
+        lvSentMessage.setVisibility(View.VISIBLE);
+        lvSentMessage.setAdapter(new SentMessageAdapter(getActivity(), playSmsDb.getAllSent()));
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
         swipeRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_red_light,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_light);
-        swipeRefreshLayout.post(new Runnable() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(true);
+            public void onRefresh() {
+                new GetSentMessage().execute();
             }
         });
-        new GetSentMessage().execute();
         return rootView;
     }
 
@@ -161,7 +161,7 @@ public class SentMessageFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(true);
             mEmptySentMsg.setVisibility(View.GONE);
             lvSentMessage.setVisibility(View.GONE);
         }
@@ -174,7 +174,7 @@ public class SentMessageFragment extends Fragment {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            progressBar.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
                     if(messageHelper.getError().equals("400")){

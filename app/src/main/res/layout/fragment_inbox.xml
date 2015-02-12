@@ -4,18 +4,20 @@
     style="@style/DefaultLayout"
     tools:context="com.artivisi.android.playsms.ui.fragment.InboxFragment">
 
-    <ProgressBar style="@style/LoadingBar"
-        android:id="@+id/inbox_loading_bar"
-        android:visibility="gone"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_list_inbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ListView style="@style/MessageListView"
+            android:id="@+id/list_inbox"
+            android:visibility="gone"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView style="@style/Banner"
         android:text="Empty"
         android:layout_gravity="center"
-        android:visibility="gone"
         android:id="@+id/inbox_empty" />
-
-    <ListView style="@style/MessageListView"
-        android:id="@+id/list_inbox"
-        android:visibility="gone"/>
 
 </FrameLayout>

@@ -169,7 +169,7 @@ public class LoginActivity extends Activity {
                     user.setUsername(username);
                     user.setToken(loginHelper.getToken());
                     setUserCookies(KEY_USER, gson.toJson(user));
-                    showDashboard();
+                    showDashboard("login");
                 }
             }
         }
@@ -180,12 +180,13 @@ public class LoginActivity extends Activity {
         super.onResume();
         SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
         if(sp.contains(KEY_USER)){
-            showDashboard();
+            showDashboard("logged");
         }
     }
 
-    public void showDashboard(){
+    public void showDashboard(String type){
         Intent dashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
+        dashboardActivity.putExtra("type", type);
         startActivity(dashboardActivity);
         finish();
     }

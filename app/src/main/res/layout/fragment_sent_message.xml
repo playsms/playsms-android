@@ -4,9 +4,6 @@
     style="@style/DefaultLayout"
     tools:context="com.artivisi.android.playsms.ui.fragment.SentMessageFragment">
 
-    <ProgressBar style="@style/LoadingBar"
-        android:id="@+id/sent_msg_loading_bar" />
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/refresh_list_sent_msg"
         android:layout_width="match_parent"

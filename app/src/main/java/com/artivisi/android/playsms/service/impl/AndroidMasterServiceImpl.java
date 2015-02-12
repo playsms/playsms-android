@@ -1,7 +1,5 @@
 package com.artivisi.android.playsms.service.impl;
 
-import android.util.Log;
-
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.LoginHelper;
@@ -40,7 +38,6 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     @Override
     public LoginHelper getToken(String urlServer, String username, String password) throws Exception{
         String url = urlServer + BASE_URI + "&u=" + username + "&p=" + password + "&op=get_token&format=json";
-        Log.d("URL : ", url);
         try {
             ResponseEntity<LoginHelper> responseEntity = restTemplate.getForEntity(url, LoginHelper.class);
             return responseEntity.getBody();
