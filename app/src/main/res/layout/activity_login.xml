@@ -14,12 +14,20 @@
             android:gravity="bottom">
 
             <TextView style="@style/BannerTittle"
+                android:visibility="gone"
                 android:text="@string/tittle"
                 android:id="@+id/banner_tittle" />
 
             <TextView style="@style/BannerSubTittle"
+                android:visibility="gone"
                 android:text="@string/subtittle"
                 android:id="@+id/banner_subtittle" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/logo_height"
+                android:layout_margin="@dimen/default_component_margin"
+                android:src="@drawable/logo"/>
 
         </LinearLayout>
 
