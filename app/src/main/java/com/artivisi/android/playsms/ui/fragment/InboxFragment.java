@@ -112,13 +112,13 @@ public class InboxFragment extends Fragment {
                 android.R.color.holo_orange_light);
 
 
-        if(playSmsDb.getAllInbox().size() <= 0){
+        mEmptyInbox.setVisibility(View.GONE);
+        lvInbox.setVisibility(View.VISIBLE);
+        lvInbox.setAdapter(adapter);
+
+        if (playSmsDb.getAllInbox().size() <= 0){
             mEmptyInbox.setVisibility(View.VISIBLE);
             lvInbox.setVisibility(View.GONE);
-        } else {
-            mEmptyInbox.setVisibility(View.GONE);
-            lvInbox.setVisibility(View.VISIBLE);
-            lvInbox.setAdapter(adapter);
         }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

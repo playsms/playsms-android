@@ -15,12 +15,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
+import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.LoginHelper;
+import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
+import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 import com.google.gson.Gson;
 
 
@@ -31,6 +35,8 @@ public class LoginActivity extends Activity {
     LinearLayout layoutLoading;
     TextView textLoginError, txtNoNetwork, txtUrlError, txtServerError;
     String username, password, serverUrl;
+    private PlaySmsDb playSmsDb;
+    private Intent dashboardActivity;
 
     public static final String PREFS = "playSMS";
     public static final String KEY_USER = "user";
@@ -39,6 +45,8 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        playSmsDb = new PlaySmsDb(getApplicationContext());
 
         Typeface typefaceTittle = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Heavy.ttf");
         Typeface typefaceSubTittle = Typeface.createFromAsset(getAssets(), "fonts/Raleway-Medium.ttf");
@@ -168,8 +176,10 @@ public class LoginActivity extends Activity {
                     user.setServerUrl(serverUrl);
                     user.setUsername(username);
                     user.setToken(loginHelper.getToken());
+                    service = new AndroidMasterServiceImpl(user);
+                    new GetInbox().execute();
+                    new GetSentMessage().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
-                    showDashboard("login");
                 }
             }
         }
@@ -185,7 +195,7 @@ public class LoginActivity extends Activity {
     }
 
     public void showDashboard(String type){
-        Intent dashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
+        dashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
         dashboardActivity.putExtra("type", type);
         startActivity(dashboardActivity);
         finish();
@@ -203,5 +213,59 @@ public class LoginActivity extends Activity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private class GetInbox extends AsyncTask<Void, Void, MessageHelper>{
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected MessageHelper doInBackground(Void... params) {
+            return service.getInbox();
+        }
+
+        @Override
+        protected void onPostExecute(MessageHelper messageHelper) {
+            super.onPostExecute(messageHelper);
+            if(messageHelper.getStatus() != null){
+                if(messageHelper.getStatus().equals("ERR")){
+                    if(messageHelper.getError().equals("501")){
+                        Log.i("ERROR : ", "NO INBOX");
+                    }
+                }
+            } else {
+                for (int i = 0; i < messageHelper.getData().size(); i++){
+                    playSmsDb.insertInbox(messageHelper.getData().get(i));
+                }
+            }
+            showDashboard("login");
+        }
+
+    }
+
+    private class GetSentMessage extends AsyncTask<Void, Void, MessageHelper>{
+
+        @Override
+        protected MessageHelper doInBackground(Void... params) {
+            return service.getSentMessage();
+        }
+
+        @Override
+        protected void onPostExecute(MessageHelper messageHelper) {
+            super.onPostExecute(messageHelper);
+            if(messageHelper.getStatus() != null){
+                if(messageHelper.getStatus().equals("ERR")){
+                    if(messageHelper.getError().equals("400")){
+                        Log.i("ERROR : ", "NO SENT MESSAGE");
+                    }
+                }
+            } else {
+                for (int i = 0; i < messageHelper.getData().size(); i++){
+                    playSmsDb.insertSent(messageHelper.getData().get(i));
+                }
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ repositories {
     }
 }
 
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -15,12 +16,22 @@ android {
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName "1.2"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("playsms.keystore")
+            storePassword "playsms"
+            keyAlias "playsms"
+            keyPassword "playsms"
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     packagingOptions {
@@ -31,7 +42,6 @@ android {
         exclude 'META-INF/notice.txt'
     }
 }
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'

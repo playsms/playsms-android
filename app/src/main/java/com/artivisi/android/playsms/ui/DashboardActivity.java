@@ -19,12 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
-import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
@@ -54,6 +52,8 @@ public class DashboardActivity extends ActionBarActivity implements
 
     private PlaySmsDb playSmsDb;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +71,6 @@ public class DashboardActivity extends ActionBarActivity implements
         mCredit = "Checking Credit";
 
         new GetCredit().execute();
-        new GetInbox().execute();
-        new GetSentMessage().execute();
 
         ImageButton btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
@@ -101,10 +99,6 @@ public class DashboardActivity extends ActionBarActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (position){
-//            case 0:
-//                mTitle = "Compose";
-//                fragmentTransaction.replace(R.id.container, newMessageFragment);
-//                break;
             case 0:
                 fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
@@ -115,7 +109,7 @@ public class DashboardActivity extends ActionBarActivity implements
                 signout();
                 break;
             default:
-                fragmentTransaction.replace(R.id.container, inboxFragment);
+//                fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
         }
         fragmentTransaction.commit();
@@ -252,59 +246,6 @@ public class DashboardActivity extends ActionBarActivity implements
             mCredit = credit.getCredit();
             if(credit.getError().equals("0")){
                 getSupportActionBar().setSubtitle(mCredit);
-            }
-        }
-    }
-
-    private class GetInbox extends AsyncTask<Void, Void, MessageHelper>{
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected MessageHelper doInBackground(Void... params) {
-            return service.getInbox();
-        }
-
-        @Override
-        protected void onPostExecute(MessageHelper messageHelper) {
-            super.onPostExecute(messageHelper);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("501")){
-                        Toast.makeText(getApplicationContext(), "Empty Inbox", Toast.LENGTH_SHORT);
-                    }
-                }
-            } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertInbox(messageHelper.getData().get(i));
-                }
-            }
-        }
-
-    }
-
-    private class GetSentMessage extends AsyncTask<Void, Void, MessageHelper>{
-
-        @Override
-        protected MessageHelper doInBackground(Void... params) {
-            return service.getSentMessage();
-        }
-
-        @Override
-        protected void onPostExecute(MessageHelper messageHelper) {
-            super.onPostExecute(messageHelper);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("400")){
-                        Toast.makeText(getApplicationContext(), "Empty Sent Message", Toast.LENGTH_SHORT);
-                    }
-                }
-            } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertSent(messageHelper.getData().get(i));
-                }
             }
         }
     }

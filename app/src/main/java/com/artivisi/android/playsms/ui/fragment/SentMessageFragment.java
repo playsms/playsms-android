@@ -102,14 +102,14 @@ public class SentMessageFragment extends Fragment {
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
 
+        mEmptySentMsg.setVisibility(View.GONE);
+        lvSentMessage.setVisibility(View.VISIBLE);
+        lvSentMessage.setAdapter(adapter);
+
         if(playSmsDb.getAllSent().size() <= 0){
             mEmptySentMsg.setVisibility(View.VISIBLE);
             lvSentMessage.setVisibility(View.GONE);
 
-        } else {
-            mEmptySentMsg.setVisibility(View.GONE);
-            lvSentMessage.setVisibility(View.VISIBLE);
-            lvSentMessage.setAdapter(adapter);
         }
 
         swipeRefreshLayout.setColorSchemeResources(
