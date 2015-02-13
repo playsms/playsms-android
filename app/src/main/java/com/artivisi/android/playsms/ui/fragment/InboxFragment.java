@@ -11,8 +11,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
@@ -53,6 +55,7 @@ public class InboxFragment extends Fragment {
     private TextView mEmptyInbox;
     private AndroidMasterService service;
     private PlaySmsDb playSmsDb;
+    private InboxAdapter adapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -87,6 +90,8 @@ public class InboxFragment extends Fragment {
 
         playSmsDb = new PlaySmsDb(getActivity());
 
+        adapter = new InboxAdapter(getActivity());
+
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(u);
 
@@ -99,21 +104,26 @@ public class InboxFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_inbox, container, false);
 
         mEmptyInbox = (TextView) rootView.findViewById(R.id.inbox_empty);
-        mEmptyInbox.setVisibility(View.GONE);
-
         lvInbox = (ListView) rootView.findViewById(R.id.list_inbox);
-        lvInbox.setVisibility(View.VISIBLE);
-        lvInbox.setAdapter(new InboxAdapter(getActivity(), playSmsDb.getAllInbox()));
-
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_inbox);
         swipeRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_red_light,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_light);
+
+
+        if(playSmsDb.getAllInbox().size() <= 0){
+            mEmptyInbox.setVisibility(View.VISIBLE);
+            lvInbox.setVisibility(View.GONE);
+        } else {
+            mEmptyInbox.setVisibility(View.GONE);
+            lvInbox.setVisibility(View.VISIBLE);
+            lvInbox.setAdapter(adapter);
+        }
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
                 new GetInbox().execute();
             }
         });
@@ -164,13 +174,12 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mEmptyInbox.setVisibility(View.GONE);
-            lvInbox.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getInbox();
+            return service.pollInbox(playSmsDb.getLastInbox());
         }
 
         @Override
@@ -180,13 +189,18 @@ public class InboxFragment extends Fragment {
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
                     if(messageHelper.getError().equals("501")){
-                        mEmptyInbox.setVisibility(View.VISIBLE);
-                        lvInbox.setVisibility(View.GONE);
+//                        mEmptyInbox.setVisibility(View.VISIBLE);
+//                        lvInbox.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "No New Inbox", Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
                 lvInbox.setVisibility(View.VISIBLE);
-                lvInbox.setAdapter(new InboxAdapter(getActivity(), messageHelper.getData()));
+                mEmptyInbox.setVisibility(View.GONE);
+                for (int i = 0; i < messageHelper.getData().size(); i++){
+                    playSmsDb.insertInbox(messageHelper.getData().get(i));
+                }
+                adapter.updateList();
             }
         }
 

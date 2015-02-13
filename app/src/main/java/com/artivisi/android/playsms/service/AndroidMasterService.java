@@ -13,7 +13,7 @@ public interface AndroidMasterService {
     public MessageHelper getSentMessage();
     public MessageHelper getInbox();
     public MessageHelper sendMessage(String to, String msg);
-    public String pollInbox(String id);
-    public String pollSentMessage(String smslogId);
+    public MessageHelper pollInbox(String id);
+    public MessageHelper pollSentMessage(String smslogId);
     public Credit getCredit();
 }

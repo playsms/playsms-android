@@ -11,8 +11,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
@@ -49,6 +51,7 @@ public class SentMessageFragment extends Fragment {
     private TextView mEmptySentMsg;
     private AndroidMasterService service;
     private PlaySmsDb playSmsDb;
+    private SentMessageAdapter adapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -82,7 +85,7 @@ public class SentMessageFragment extends Fragment {
         }
 
         playSmsDb = new PlaySmsDb(getActivity());
-
+        adapter = new SentMessageAdapter(getActivity());
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(u);
 
@@ -96,13 +99,19 @@ public class SentMessageFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_sent_message, container, false);
 
         mEmptySentMsg = (TextView) rootView.findViewById(R.id.sent_msg_empty);
-        mEmptySentMsg.setVisibility(View.GONE);
-
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
-        lvSentMessage.setVisibility(View.VISIBLE);
-        lvSentMessage.setAdapter(new SentMessageAdapter(getActivity(), playSmsDb.getAllSent()));
-
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
+
+        if(playSmsDb.getAllSent().size() <= 0){
+            mEmptySentMsg.setVisibility(View.VISIBLE);
+            lvSentMessage.setVisibility(View.GONE);
+
+        } else {
+            mEmptySentMsg.setVisibility(View.GONE);
+            lvSentMessage.setVisibility(View.VISIBLE);
+            lvSentMessage.setAdapter(adapter);
+        }
+
         swipeRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_red_light,
                 android.R.color.holo_green_dark,
@@ -162,13 +171,11 @@ public class SentMessageFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             swipeRefreshLayout.setRefreshing(true);
-            mEmptySentMsg.setVisibility(View.GONE);
-            lvSentMessage.setVisibility(View.GONE);
         }
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getSentMessage();
+            return service.pollSentMessage(playSmsDb.getLastSent());
         }
 
         @Override
@@ -178,13 +185,18 @@ public class SentMessageFragment extends Fragment {
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
                     if(messageHelper.getError().equals("400")){
-                        mEmptySentMsg.setVisibility(View.VISIBLE);
-                        lvSentMessage.setVisibility(View.GONE);
+//                        mEmptySentMsg.setVisibility(View.VISIBLE);
+//                        lvSentMessage.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "No New Sent Message", Toast.LENGTH_SHORT).show();
                     }
                 }
             } else {
                 lvSentMessage.setVisibility(View.VISIBLE);
-                lvSentMessage.setAdapter(new SentMessageAdapter(getActivity(), messageHelper.getData()));
+                mEmptySentMsg.setVisibility(View.GONE);
+                for (int i = 0; i < messageHelper.getData().size(); i++){
+                    playSmsDb.insertSent(messageHelper.getData().get(i));
+                }
+                adapter.updateList();
             }
         }
     }

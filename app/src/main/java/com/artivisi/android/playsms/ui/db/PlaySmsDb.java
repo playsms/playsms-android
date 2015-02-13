@@ -89,11 +89,14 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public void deleteInbox(String id){
         sqliteDBInstance = getWritableDatabase();
-        this.sqliteDBInstance.delete(DB_TABLE_INBOX, "id=?", new String[]{String.valueOf(id)});
+        sqliteDBInstance.delete(DB_TABLE_INBOX, "id=?", new String[]{String.valueOf(id)});
+        sqliteDBInstance.close();
     }
 
     public void truncateInbox(){
-        this.sqliteDBInstance.execSQL("delete from " + DB_TABLE_INBOX);
+        sqliteDBInstance = getWritableDatabase();
+        sqliteDBInstance.execSQL("delete from " + DB_TABLE_INBOX);
+        sqliteDBInstance.close();
     }
 
     public List<Message> getAllInbox(){
@@ -116,6 +119,27 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         } else {
             this.sqliteDBInstance.close();
             return new ArrayList<Message>();
+        }
+    }
+
+    public String getLastInbox(){
+        sqliteDBInstance = getWritableDatabase();
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_INBOX, new String[]{DB_COLUMN_ID}, null, null, null, null, null);
+        String id = null;
+        int counter = 0;
+        if(cursor.getCount() > 0){
+            while (cursor.moveToNext()){
+                int currentId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(DB_COLUMN_ID)));
+                if(currentId > counter){
+                    counter = currentId;
+                    id = cursor.getString(cursor.getColumnIndex(DB_COLUMN_ID));
+                }
+            }
+            sqliteDBInstance.close();
+            return id;
+        } else {
+            sqliteDBInstance.close();
+            return null;
         }
     }
 
@@ -149,10 +173,13 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     public void deleteSent(String id){
         sqliteDBInstance = getWritableDatabase();
         this.sqliteDBInstance.delete(DB_TABLE_SENT, "smslog_id=?", new String[]{String.valueOf(id)});
+        sqliteDBInstance.close();
     }
 
     public void truncateSent(){
-        this.sqliteDBInstance.execSQL("delete from " + DB_TABLE_SENT);
+        sqliteDBInstance = getWritableDatabase();
+        sqliteDBInstance.execSQL("delete from " + DB_TABLE_SENT);
+        sqliteDBInstance.close();
     }
 
     public List<Message> getAllSent(){
@@ -177,6 +204,27 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         } else {
             sqliteDBInstance.close();
             return new ArrayList<Message>();
+        }
+    }
+
+    public String getLastSent(){
+        sqliteDBInstance = getWritableDatabase();
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SENT, new String[]{DB_COLUMN_SMSLOG}, null, null, null, null, null);
+        String smslogId = null;
+        int counter = 0;
+        if(cursor.getCount() > 0){
+            while (cursor.moveToNext()){
+                int currentId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SMSLOG)));
+                if(currentId > counter){
+                    counter = currentId;
+                    smslogId = cursor.getString(cursor.getColumnIndex(DB_COLUMN_SMSLOG));
+                }
+            }
+            sqliteDBInstance.close();
+            return smslogId;
+        } else {
+            sqliteDBInstance.close();
+            return null;
         }
     }
 }

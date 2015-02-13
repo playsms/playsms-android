@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Message;
+import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 
 import java.util.List;
 
@@ -19,11 +20,15 @@ public class InboxAdapter extends BaseAdapter{
 
     private Context context;
     private List<Message> listMessages;
+    private PlaySmsDb db;
 
-    public InboxAdapter (Context context, List<Message> listMessages){
+    public InboxAdapter (Context context){
         this.context = context;
-        this.listMessages = listMessages;
+        this.db = new PlaySmsDb(context);
+        this.listMessages = db.getAllInbox();
     }
+
+
 
     @Override
     public int getCount() {
@@ -58,5 +63,10 @@ public class InboxAdapter extends BaseAdapter{
         inboxDate.setText(message.getDt());
 
         return convertView;
+    }
+
+    public void updateList(){
+        listMessages = db.getAllInbox();
+        notifyDataSetChanged();
     }
 }

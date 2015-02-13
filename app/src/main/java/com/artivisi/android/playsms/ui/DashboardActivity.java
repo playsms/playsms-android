@@ -137,6 +137,8 @@ public class DashboardActivity extends ActionBarActivity implements
     }
 
     public void signout(){
+        playSmsDb.truncateInbox();
+        playSmsDb.truncateSent();
         SharedPreferences sharedpreferences = getSharedPreferences (LoginActivity.PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();

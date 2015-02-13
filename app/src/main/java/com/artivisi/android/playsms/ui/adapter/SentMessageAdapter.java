@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Message;
+import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 
 import java.util.List;
 
@@ -20,10 +21,12 @@ public class SentMessageAdapter extends BaseAdapter {
 
     private Context context;
     private List<Message> listMessages;
+    private PlaySmsDb db;
 
-    public SentMessageAdapter(Context context, List<Message> listMessages){
+    public SentMessageAdapter(Context context){
         this.context = context;
-        this.listMessages = listMessages;
+        this.db = new PlaySmsDb(context);
+        this.listMessages = db.getAllSent();
     }
 
     @Override
@@ -63,5 +66,10 @@ public class SentMessageAdapter extends BaseAdapter {
         sentDate.setText(message.getDt());
 
         return convertView;
+    }
+
+    public void updateList(){
+        listMessages = db.getAllSent();
+        notifyDataSetChanged();
     }
 }

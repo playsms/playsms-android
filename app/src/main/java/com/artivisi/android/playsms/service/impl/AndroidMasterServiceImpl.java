@@ -69,29 +69,47 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     }
 
     @Override
-    public String pollInbox(String id) {
-        String url = PLAYSMS_URL + BASE_URI
-                + "&u=" + user.getUsername()
-                + "&h=" + user.getToken()
-                + "&op=ix"
-                + "&c=1"
-                + "&last=" + id
-                + "&format=json";
+    public MessageHelper pollInbox(String id) {
+        String url;
+        if(id != null){
+            url = PLAYSMS_URL + BASE_URI
+                    + "&u=" + user.getUsername()
+                    + "&h=" + user.getToken()
+                    + "&op=ix"
+                    + "&last=" + id
+                    + "&format=json";
+        } else {
+            url = PLAYSMS_URL + BASE_URI
+                    + "&u=" + user.getUsername()
+                    + "&h=" + user.getToken()
+                    + "&op=ix"
+                    + "&format=json";
+        }
+
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody().getData().get(0).getId();
+        return responseEntity.getBody();
     }
 
     @Override
-    public String pollSentMessage(String smslogId) {
-        String url = PLAYSMS_URL + BASE_URI
-                + "&u=" + user.getUsername()
-                + "&h=" + user.getToken()
-                + "&op=ds"
-                + "&c=1"
-                + "&last=" + smslogId
-                + "&format=json";
+    public MessageHelper pollSentMessage(String smslogId) {
+        String url;
+        if(smslogId != null){
+            url = PLAYSMS_URL + BASE_URI
+                    + "&u=" + user.getUsername()
+                    + "&h=" + user.getToken()
+                    + "&op=ds"
+                    + "&last=" + smslogId
+                    + "&format=json";
+        } else {
+            url = PLAYSMS_URL + BASE_URI
+                    + "&u=" + user.getUsername()
+                    + "&h=" + user.getToken()
+                    + "&op=ds"
+                    + "&format=json";
+        }
+
         ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody().getData().get(0).getSmslogId();
+        return responseEntity.getBody();
     }
 
     @Override
