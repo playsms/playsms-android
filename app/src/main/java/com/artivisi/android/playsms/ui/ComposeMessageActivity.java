@@ -2,6 +2,8 @@ package com.artivisi.android.playsms.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -62,9 +64,13 @@ public class ComposeMessageActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_send) {
-            msg = mMsg.getText().toString();
-            to = mMsgTo.getText().toString();
-            new SendMessage().execute();
+            if(isNetworkAvailable()){
+                msg = mMsg.getText().toString();
+                to = mMsgTo.getText().toString();
+                new SendMessage().execute();
+            } else {
+                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
@@ -111,5 +117,12 @@ public class ComposeMessageActivity extends ActionBarActivity {
             Gson gson = new Gson();
             return gson.fromJson(data, a);
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

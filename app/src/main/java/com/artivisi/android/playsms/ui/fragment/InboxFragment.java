@@ -3,6 +3,8 @@ package com.artivisi.android.playsms.ui.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -124,7 +126,12 @@ public class InboxFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetInbox().execute();
+                if(isNetworkAvailable()){
+                    new GetInbox().execute();
+                } else {
+                    Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
         });
 
@@ -195,6 +202,11 @@ public class InboxFragment extends Fragment {
                     }
                 }
             } else {
+                if(messageHelper.getData().size() == 1){
+                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Message", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Messages", Toast.LENGTH_SHORT).show();
+                }
                 lvInbox.setVisibility(View.VISIBLE);
                 mEmptyInbox.setVisibility(View.GONE);
                 for (int i = 0; i < messageHelper.getData().size(); i++){
@@ -221,5 +233,12 @@ public class InboxFragment extends Fragment {
             Gson gson = new Gson();
             return gson.fromJson(data, a);
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

@@ -3,6 +3,8 @@ package com.artivisi.android.playsms.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
@@ -70,7 +73,13 @@ public class DashboardActivity extends ActionBarActivity implements
         mTitle = user.getUsername();
         mCredit = "Checking Credit";
 
-        new GetCredit().execute();
+        if(isNetworkAvailable()){
+            new GetCredit().execute();
+        } else {
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            mCredit = "";
+            getSupportActionBar().setSubtitle(mCredit);
+        }
 
         ImageButton btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +274,13 @@ public class DashboardActivity extends ActionBarActivity implements
             Gson gson = new Gson();
             return gson.fromJson(data, a);
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

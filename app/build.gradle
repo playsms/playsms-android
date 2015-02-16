@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId "com.artivisi.android.playsms"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.2"
+        versionCode 2
+        versionName "1.0.3"
     }
 
     signingConfigs {
@@ -27,6 +27,7 @@ android {
             keyPassword "playsms"
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -44,6 +45,7 @@ android {
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:+'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.M1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.1.3'

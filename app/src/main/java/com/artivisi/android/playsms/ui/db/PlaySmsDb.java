@@ -34,14 +34,14 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private SQLiteDatabase sqliteDBInstance = null;
 
     private static final String DB_CREATE_TABLE_INBOX_SCRIPT = "create table " + DB_TABLE_INBOX +
-            "(" + DB_COLUMN_ID +" text PRIMARY KEY,"
+            "(" + DB_COLUMN_ID +" integer,"
             + DB_COLUMN_SRC +" text,"
             + DB_COLUMN_DST +" text,"
             + DB_COLUMN_MSG +" text,"
             + DB_COLUMN_DT +" text)";
 
     private static final String DB_CREATE_TABLE_SENT_SCRIPT = "create table " + DB_TABLE_SENT +
-            "(" + DB_COLUMN_SMSLOG +" text PRIMARY KEY,"
+            "(" + DB_COLUMN_SMSLOG +" integer,"
             + DB_COLUMN_SRC +" text,"
             + DB_COLUMN_DST +" text,"
             + DB_COLUMN_MSG +" text,"
@@ -65,9 +65,10 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     }
 
     public void insertInbox(Message message){
+        int id = Integer.parseInt(message.getId());
         sqliteDBInstance = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DB_COLUMN_ID, message.getId());
+        contentValues.put(DB_COLUMN_ID, id);
         contentValues.put(DB_COLUMN_SRC, message.getSrc());
         contentValues.put(DB_COLUMN_DST, message.getDst());
         contentValues.put(DB_COLUMN_MSG, message.getMsg());
@@ -89,7 +90,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public void deleteInbox(String id){
         sqliteDBInstance = getWritableDatabase();
-        sqliteDBInstance.delete(DB_TABLE_INBOX, "id=?", new String[]{String.valueOf(id)});
+        sqliteDBInstance.delete(DB_TABLE_INBOX, "id=?", new String[]{id});
         sqliteDBInstance.close();
     }
 
@@ -101,7 +102,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public List<Message> getAllInbox(){
         this.sqliteDBInstance = getWritableDatabase();
-        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_INBOX, new String[]{DB_COLUMN_ID, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT}, null, null, null, null, null);
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_INBOX, new String[]{DB_COLUMN_ID, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT}, null, null, null, null, DB_COLUMN_ID + " DESC");
         List<Message> listInbox = new ArrayList<Message>();
         if(cursor.getCount() > 0){
             while (cursor.moveToNext()){
@@ -144,9 +145,10 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     }
 
     public void insertSent(Message message){
+        int smslog = Integer.parseInt(message.getSmslogId());
         sqliteDBInstance = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DB_COLUMN_SMSLOG, message.getSmslogId());
+        contentValues.put(DB_COLUMN_SMSLOG, smslog);
         contentValues.put(DB_COLUMN_SRC, message.getSrc());
         contentValues.put(DB_COLUMN_DST, message.getDst());
         contentValues.put(DB_COLUMN_MSG, message.getMsg());
@@ -184,7 +186,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public List<Message> getAllSent(){
         sqliteDBInstance = getWritableDatabase();
-        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SENT, new String[]{DB_COLUMN_SMSLOG, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_UPDATE, DB_COLUMN_STATUS}, null, null, null, null, null);
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SENT, new String[]{DB_COLUMN_SMSLOG, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_UPDATE, DB_COLUMN_STATUS}, null, null, null, null, DB_COLUMN_SMSLOG + " DESC");
         List<Message> listInbox = new ArrayList<Message>();
         if(cursor.getCount() > 0){
             while (cursor.moveToNext()){
