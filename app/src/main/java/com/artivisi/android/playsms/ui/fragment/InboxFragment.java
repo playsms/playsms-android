@@ -1,7 +1,9 @@
 package com.artivisi.android.playsms.ui.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,7 +15,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -216,6 +217,10 @@ public class InboxFragment extends Fragment {
             }
         }
 
+    }
+
+    public void refreshList(){
+        adapter.updateList();
     }
 
     protected <T> T getUserCookie(String key, Class<T> a) {

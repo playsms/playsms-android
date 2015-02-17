@@ -29,6 +29,7 @@
             android:name=".ui.DashboardActivity"
             android:windowSoftInputMode="adjustPan|adjustResize"
             android:configChanges="orientation|screenSize"
+            android:exported="true"
             android:label="@string/title_activity_dashboard" >
         </activity>
         <activity
@@ -41,7 +42,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DashboardActivity" />
         </activity>
-        <receiver android:name=".ui.AlarmReceiver" />
+        <receiver android:name=".ui.QueryReceiver">
+            <intent-filter>
+                <action android:name=".DISPLAY_MESSAGE">
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

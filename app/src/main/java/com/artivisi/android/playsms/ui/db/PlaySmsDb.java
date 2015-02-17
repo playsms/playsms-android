@@ -30,6 +30,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_COLUMN_DT = "dt";
     private static final String DB_COLUMN_UPDATE = "updt";
     private static final String DB_COLUMN_STATUS = "status";
+    private static final String DB_COLUMN_CREDIT = "credit";
 
     private SQLiteDatabase sqliteDBInstance = null;
 
@@ -48,6 +49,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_DT +" text,"
             + DB_COLUMN_UPDATE +" text,"
             + DB_COLUMN_STATUS +" text)";
+
 
     public PlaySmsDb(Context context) {
         super(context, DB_NAME, null, DB_VERSION_NUMBER);

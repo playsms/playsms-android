@@ -3,7 +3,9 @@ package com.artivisi.android.playsms.ui;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +46,10 @@ public class DashboardActivity extends ActionBarActivity implements
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+
+    public static final String DISPLAY_MESSAGE_ACTION =
+            "com.artivisi.android.playsms.DISPLAY_MESSAGE";
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AndroidMasterService service;
     /**
@@ -57,13 +64,23 @@ public class DashboardActivity extends ActionBarActivity implements
 
     private PlaySmsDb playSmsDb;
 
-    PendingIntent pendingIntent;
+    private PendingIntent pendingIntent;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("RECEIVER : ","DELIVERED");
+            inboxFragment.refreshList();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        registerReceiver(receiver,
+                new IntentFilter(DISPLAY_MESSAGE_ACTION));
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         user = getUserCookie(LoginActivity.KEY_USER, User.class);
@@ -97,7 +114,7 @@ public class DashboardActivity extends ActionBarActivity implements
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        Intent alarmIntent = new Intent(this, QueryReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         start();
     }
@@ -154,6 +171,7 @@ public class DashboardActivity extends ActionBarActivity implements
         editor.commit();
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
+        unregisterReceiver(receiver);
         stop();
         finish();
     }
@@ -162,7 +180,6 @@ public class DashboardActivity extends ActionBarActivity implements
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         int interval = 30 * 1000;
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
     public void stop() {
