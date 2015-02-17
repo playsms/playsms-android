@@ -220,6 +220,8 @@ public class InboxFragment extends Fragment {
     }
 
     public void refreshList(){
+        mEmptyInbox.setVisibility(View.GONE);
+        lvInbox.setVisibility(View.VISIBLE);
         adapter.updateList();
     }
 

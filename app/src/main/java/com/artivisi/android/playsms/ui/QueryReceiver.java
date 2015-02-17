@@ -43,7 +43,7 @@ public class QueryReceiver extends BroadcastReceiver {
         if(isNetworkAvailable(context)){
             new DoQuery(context).execute();
         } else {
-            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            Log.i("CONNECTION : ", "NO INTERNET CONNECTION");
         }
     }
 
