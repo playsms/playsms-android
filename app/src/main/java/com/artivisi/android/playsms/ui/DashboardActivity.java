@@ -1,6 +1,8 @@
 package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -55,7 +57,7 @@ public class DashboardActivity extends ActionBarActivity implements
 
     private PlaySmsDb playSmsDb;
 
-
+    PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,10 @@ public class DashboardActivity extends ActionBarActivity implements
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        start();
     }
 
     @Override
@@ -148,7 +154,20 @@ public class DashboardActivity extends ActionBarActivity implements
         editor.commit();
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
+        stop();
         finish();
+    }
+
+    public void start(){
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int interval = 30 * 1000;
+        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stop() {
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.cancel(pendingIntent);
     }
 
     public void restoreActionBar() {
