@@ -4,6 +4,7 @@ import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
+import com.artivisi.android.playsms.helper.QueryHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 
 import org.springframework.http.ResponseEntity;
@@ -116,6 +117,13 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     public Credit getCredit() {
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=cr&format=json";
         ResponseEntity<Credit> responseEntity = restTemplate.getForEntity(url, Credit.class);
+        return responseEntity.getBody();
+    }
+
+    @Override
+    public QueryHelper query() {
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=query&format=json";
+        ResponseEntity<QueryHelper> responseEntity = restTemplate.getForEntity(url, QueryHelper.class);
         return responseEntity.getBody();
     }
 }

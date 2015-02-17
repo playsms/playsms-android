@@ -3,6 +3,7 @@ package com.artivisi.android.playsms.service;
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
+import com.artivisi.android.playsms.helper.QueryHelper;
 
 
 /**
@@ -16,4 +17,5 @@ public interface AndroidMasterService {
     public MessageHelper pollInbox(String id);
     public MessageHelper pollSentMessage(String smslogId);
     public Credit getCredit();
+    public QueryHelper query();
 }
