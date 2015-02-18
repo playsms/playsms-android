@@ -48,22 +48,25 @@ public class SentMessageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Message message = getItem(position);
 
+//        Typeface robotoMedium = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+//        Typeface robotoRegular = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
+        Typeface robotoLight = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
+
         if(convertView == null){
             convertView = LayoutInflater.from(context).inflate(R.layout.list_sent_message, parent, false);
         }
 
-        Typeface ralewayRegular = Typeface.createFromAsset(context.getAssets(), "fonts/Raleway-Heavy.ttf");
-
         TextView sentTo = (TextView) convertView.findViewById(R.id.txt_sent_to);
         sentTo.setText(message.getDst());
-//        sentTo.setTypeface(ralewayRegular);
+        sentTo.setTypeface(robotoLight);
 
         TextView sentMsg = (TextView) convertView.findViewById(R.id.txt_sent_msg);
         sentMsg.setText(message.getMsg());
-//        sentMsg.setTypeface(ralewayRegular);
+        sentMsg.setTypeface(robotoLight);
 
         TextView sentDate = (TextView) convertView.findViewById(R.id.txt_msg_date);
         sentDate.setText(message.getDt());
+        sentDate.setTypeface(robotoLight);
 
         return convertView;
     }

@@ -1,0 +1,27 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LayoutMatchParent"
+    android:fillViewport="true"
+    tools:context="com.artivisi.android.playsms.ui.AboutActivity">
+    <LinearLayout style="@style/DefaultLayout">
+
+        <TextView style="@style/AboutTextTittle"
+            android:text="playSMS Android App"
+            android:id="@+id/view_about_tittle"/>
+
+        <View style="@style/HorizontalDivider" />
+
+        <TextView style="@style/AboutTextContent"
+            android:text="Free and Open Source Android app for playSMS."
+            android:id="@+id/view_about_content_1"/>
+
+        <TextView style="@style/AboutTextContent"
+            android:text="playSMS is a flexible Web-based Mobile Portal System that it can be made to fit to various services such as an SMS gateway, personal messaging systems, corporate and group communication tools. More information about playSMS can be found at the project URL http://www.playsms.org."
+            android:id="@+id/view_about_content_2"/>
+
+        <TextView style="@style/AboutTextContent"
+            android:text="playSMS provides Web Services API where external applications may use it to control certain features on playSMS, such as for sending and receiving SMS. More information about playSMS Web Services API can be read on this URL http://bit.ly/playsmsws."
+            android:id="@+id/view_about_content_3"/>
+    </LinearLayout>
+</ScrollView>

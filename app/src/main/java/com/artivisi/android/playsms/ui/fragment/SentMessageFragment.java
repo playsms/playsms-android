@@ -132,6 +132,11 @@ public class SentMessageFragment extends Fragment {
         return rootView;
     }
 
+    public void refreshList(){
+        mEmptySentMsg.setVisibility(View.GONE);
+        lvSentMessage.setVisibility(View.VISIBLE);
+        adapter.updateList();
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

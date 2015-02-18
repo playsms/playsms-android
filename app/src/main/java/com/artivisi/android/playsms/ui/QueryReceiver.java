@@ -35,6 +35,7 @@ public class QueryReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        persistentNotif(context);
         User user = getUserCookie(context, LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(user);
         db = new PlaySmsDb(context);
@@ -56,13 +57,29 @@ public class QueryReceiver extends BroadcastReceiver {
 
         Notification notification = new Notification(icon, message, when);
         notification.defaults |= Notification.DEFAULT_ALL;
-
         String title = context.getString(R.string.app_name);
         Intent notificationIntent = new Intent(context, DashboardActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
         notification.setLatestEventInfo(context, title, message, intent);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
+        notificationManager.notify(0, notification);
+    }
+
+    private static void persistentNotif(Context context){
+        int icon = R.drawable.app_notif;
+        long when = System.currentTimeMillis();
+
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = new Notification(icon, null, when);
+        notification.defaults |= Notification.DEFAULT_ALL;
+        String title = context.getString(R.string.app_name);
+        Intent notificationIntent = new Intent(context, DashboardActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        notification.setLatestEventInfo(context, title, null, intent);
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
         notificationManager.notify(0, notification);
     }
 
@@ -103,7 +120,7 @@ public class QueryReceiver extends BroadcastReceiver {
                 }
 
                 if(!queryHelper.getData().getLastId().getUserOutgoing().equals(lastSent)){
-                    new GetSentMessage().execute();
+                    new GetSentMessage(context).execute();
                 }
 
             } else {
@@ -142,7 +159,7 @@ public class QueryReceiver extends BroadcastReceiver {
                 }
             } else {
                 for (int i = 0; i < messageHelper.getData().size(); i++) {
-                    db.insertInbox(messageHelper.getData().get(i));
+                    db.insertNewInbox(messageHelper.getData().get(i));
                 }
                 String msg;
                 if (messageHelper.getData().size() == 1) {
@@ -151,6 +168,7 @@ public class QueryReceiver extends BroadcastReceiver {
                     msg = messageHelper.getData().size() + " New Messages";
                 }
                 Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
+                intent.putExtra("polling","newInbox");
                 context.sendBroadcast(intent);
                 generateNotif(context, msg);
             }
@@ -159,10 +177,17 @@ public class QueryReceiver extends BroadcastReceiver {
     }
 
     private class GetSentMessage extends AsyncTask<Void, Void, MessageHelper>{
+        private Context context;
+
+        public GetSentMessage(Context context) {
+            this.context = context;
+            Log.i("GET INBOX : ", "RUNNING");
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.i("GET INBOX : ", "RUNNING");
+            Log.i("GET SENT : ", "RUNNING");
         }
 
         @Override
@@ -173,7 +198,7 @@ public class QueryReceiver extends BroadcastReceiver {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            Log.i("GET INBOX : ", "DONE");
+            Log.i("GET SENT : ", "DONE");
             if(messageHelper.getStatus() != null){
                 if(messageHelper.getStatus().equals("ERR")){
                     if(messageHelper.getError().equals("400")){
@@ -184,6 +209,9 @@ public class QueryReceiver extends BroadcastReceiver {
                 for (int i = 0; i < messageHelper.getData().size(); i++){
                     db.insertSent(messageHelper.getData().get(i));
                 }
+                Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
+                intent.putExtra("polling","newSent");
+                context.sendBroadcast(intent);
             }
         }
     }

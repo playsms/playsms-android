@@ -74,6 +74,23 @@
         <item name="android:textSize">@dimen/banner_subtittle</item>
     </style>
 
+    <style name="AboutTextTittle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/default_component_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/about_text_tittle</item>
+        <item name="android:textColor">@color/grey_soft</item>
+    </style>
+
+    <style name="AboutTextContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/default_component_padding</item>
+        <item name="android:textSize">@dimen/about_text_content</item>
+        <item name="android:autoLink">web</item>
+    </style>
+
     <style name="ErrorMessage" parent="LayoutWrapContent">
         <item name="android:layout_gravity">center</item>
         <item name="android:textColor">@android:color/holo_red_dark</item>
@@ -125,7 +142,7 @@
     <style name="MessageListLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/white_milk</item>
+        <item name="android:background">@color/grey_light</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
@@ -136,6 +153,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">@dimen/sent_message_text_tittle</item>
         <item name="android:textColor">@color/grey_dark</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:singleLine">true</item>
     </style>
 
@@ -146,6 +164,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">@dimen/sent_message_text_subtittle</item>
         <item name="android:textColor">@color/grey</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
     <style name="MessageDate">
         <item name="android:layout_width">match_parent</item>

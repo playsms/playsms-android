@@ -22,6 +22,9 @@
     <dimen name="banner_subtittle">14dp</dimen>
     <dimen name="logo_height">100dp</dimen>
 
+    <dimen name="about_text_tittle">24dp</dimen>
+    <dimen name="about_text_content">16dp</dimen>
+
     <dimen name="edittext_text">20dp</dimen>
 
     <dimen name="navigation_drawer_width">240dp</dimen>

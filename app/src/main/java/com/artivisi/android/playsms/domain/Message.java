@@ -18,6 +18,7 @@ public class Message {
     private String error;
     private String queue;
     private String to;
+    private Boolean read;
 
     public String getId() {
         return id;
@@ -105,5 +106,13 @@ public class Message {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public Boolean getRead() {
+        return read;
+    }
+
+    public void setRead(Boolean read) {
+        this.read = read;
     }
 }

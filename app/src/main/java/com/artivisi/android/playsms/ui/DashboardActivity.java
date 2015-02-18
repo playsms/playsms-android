@@ -61,7 +61,7 @@ public class DashboardActivity extends ActionBarActivity implements
     private InboxFragment inboxFragment = new InboxFragment();
     private User user;
     private String mCredit;
-
+    private ImageButton btnComposeMsg;
     private PlaySmsDb playSmsDb;
 
     private PendingIntent pendingIntent;
@@ -70,7 +70,14 @@ public class DashboardActivity extends ActionBarActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i("RECEIVER : ","DELIVERED");
-            inboxFragment.refreshList();
+            String poll = intent.getStringExtra("polling");
+            if(poll.equals("newInbox")){
+                inboxFragment.refreshList();
+            } else if (poll.equals("newSent")){
+                sentMessageFragment.refreshList();
+            } else {
+                Log.i("UNKNOWN EXTRAS : ", intent.getStringExtra("polling"));
+            }
         }
     };
 
@@ -100,7 +107,7 @@ public class DashboardActivity extends ActionBarActivity implements
             getSupportActionBar().setSubtitle(mCredit);
         }
 
-        ImageButton btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
+        btnComposeMsg = (ImageButton) findViewById(R.id.btn_new_msg);
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +124,10 @@ public class DashboardActivity extends ActionBarActivity implements
         Intent alarmIntent = new Intent(this, QueryReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         start();
+    }
+
+    public void hideButtonCompose(){
+        btnComposeMsg.setVisibility(View.GONE);
     }
 
     @Override
@@ -138,6 +149,10 @@ public class DashboardActivity extends ActionBarActivity implements
                 fragmentTransaction.replace(R.id.container, sentMessageFragment);
                 break;
             case 2:
+                Intent aboutActivity = new Intent(DashboardActivity.this, AboutActivity.class);
+                startActivity(aboutActivity);
+                break;
+            case 3:
                 signout();
                 break;
             default:
@@ -178,7 +193,7 @@ public class DashboardActivity extends ActionBarActivity implements
 
     public void start(){
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        int interval = 30 * 1000;
+        int interval = 60 * 1000;
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
 

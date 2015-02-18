@@ -200,6 +200,8 @@ public class InboxFragment extends Fragment {
 //                        mEmptyInbox.setVisibility(View.VISIBLE);
 //                        lvInbox.setVisibility(View.GONE);
                         Toast.makeText(getActivity(), "No New Inbox", Toast.LENGTH_SHORT).show();
+                        playSmsDb.readInbox();
+                        adapter.updateList();
                     }
                 }
             } else {

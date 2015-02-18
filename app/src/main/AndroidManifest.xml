@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.artivisi.android.playsms">
+    package="com.artivisi.android.playsms" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.NETWORK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -14,11 +14,11 @@
         android:theme="@style/CustomActionBarTheme" >
         <activity
             android:name=".ui.LoginActivity"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,27 +27,38 @@
         </activity>
         <activity
             android:name=".ui.DashboardActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:label="@string/title_activity_dashboard" >
+            android:label="@string/title_activity_dashboard"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
         <activity
             android:name=".ui.ComposeMessageActivity"
             android:label="@string/title_activity_compose_message"
-            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:parentActivityName=".ui.DashboardActivity"
             android:configChanges="orientation|screenSize"
-            android:parentActivityName=".ui.DashboardActivity">
+            android:windowSoftInputMode="adjustPan|adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DashboardActivity" />
         </activity>
-        <receiver android:name=".ui.QueryReceiver">
+
+        <receiver android:name=".ui.QueryReceiver" >
             <intent-filter>
-                <action android:name=".DISPLAY_MESSAGE">
+                <action android:name=".DISPLAY_MESSAGE" >
                 </action>
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ui.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.DashboardActivity" />
+        </activity>
     </application>
 
 </manifest>
