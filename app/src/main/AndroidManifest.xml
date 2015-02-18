@@ -28,13 +28,13 @@
         <activity
             android:name=".ui.DashboardActivity"
             android:configChanges="orientation|screenSize"
+            android:label="Dashboard"
             android:exported="true"
-            android:label="@string/title_activity_dashboard"
             android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
         <activity
             android:name=".ui.ComposeMessageActivity"
-            android:label="@string/title_activity_compose_message"
+            android:label="Compose Message"
             android:parentActivityName=".ui.DashboardActivity"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustPan|adjustResize" >
@@ -52,7 +52,7 @@
 
         <activity
             android:name=".ui.AboutActivity"
-            android:label="@string/title_activity_about"
+            android:label="About"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustPan|adjustResize" >
             <meta-data

@@ -2,6 +2,7 @@ package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -123,7 +126,43 @@ public class DashboardActivity extends ActionBarActivity implements
 
         Intent alarmIntent = new Intent(this, QueryReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        createNotif(getApplicationContext());
         start();
+    }
+
+    private static void createNotif(Context context){
+        int icon = R.drawable.app_notif;
+        long when = System.currentTimeMillis();
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(icon)
+                        .setWhen(when)
+                        .setContentTitle("playSMS")
+                        .setAutoCancel(false);
+        Intent result = new Intent(context, DashboardActivity.class);
+        result.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(DashboardActivity.class);
+        stackBuilder.addNextIntent(result);
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, mBuilder.build());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent.hasExtra("notif_action")){
+            if(intent.getStringExtra("notif_action").equals("inbox")){
+                createNotif(getApplicationContext());
+                onNavigationDrawerItemSelected(0);
+            }
+        } else {
+            return;
+        }
     }
 
     public void hideButtonCompose(){

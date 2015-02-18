@@ -10,6 +10,9 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
@@ -32,7 +35,6 @@ public class QueryReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        persistentNotif(context);
         User user = getUserCookie(context, LoginActivity.KEY_USER, User.class);
         service = new AndroidMasterServiceImpl(user);
         db = new PlaySmsDb(context);
@@ -45,39 +47,47 @@ public class QueryReceiver extends BroadcastReceiver {
         }
     }
 
-    private static void generateNotif(Context context, String message){
+//    private static void generateNotif(Context context, String message){
+//        int icon = R.drawable.app_notif;
+//        long when = System.currentTimeMillis();
+//
+//        NotificationManager notificationManager = (NotificationManager)
+//                context.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        Notification notification = new Notification(icon, message, when);
+//        notification.defaults |= Notification.DEFAULT_ALL;
+//        String title = context.getString(R.string.app_name);
+//        Intent notificationIntent = new Intent(context, DashboardActivity.class);
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+//        notification.setLatestEventInfo(context, title, message, intent);
+//        notification.flags = Notification.FLAG_ONGOING_EVENT;
+//        notificationManager.notify(0, notification);
+//    }
+
+    private static void generateNotif(Context context, String title, String message, String type){
         int icon = R.drawable.app_notif;
         long when = System.currentTimeMillis();
+        type = "";
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                .setSmallIcon(icon)
+                .setWhen(when)
+                .setContentTitle(title)
+                .setContentText(message);
+        mBuilder.setAutoCancel(false);
+        Intent result = new Intent(context, DashboardActivity.class);
+        result.putExtra("notif_action", type);
+        result.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(DashboardActivity.class);
+        stackBuilder.addNextIntent(result);
 
-        Notification notification = new Notification(icon, message, when);
-        notification.defaults |= Notification.DEFAULT_ALL;
-        String title = context.getString(R.string.app_name);
-        Intent notificationIntent = new Intent(context, DashboardActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context, title, message, intent);
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
-        notificationManager.notify(0, notification);
-    }
-
-    private static void persistentNotif(Context context){
-        int icon = R.drawable.app_notif;
-        long when = System.currentTimeMillis();
-
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification(icon, null, when);
-        notification.defaults |= Notification.DEFAULT_ALL;
-        String title = context.getString(R.string.app_name);
-        Intent notificationIntent = new Intent(context, DashboardActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context, title, null, intent);
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
-        notificationManager.notify(0, notification);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, mBuilder.build());
     }
 
     private boolean isNetworkAvailable(Context context) {
@@ -172,19 +182,26 @@ public class QueryReceiver extends BroadcastReceiver {
                         }
                     }
                 } else {
-                    for (int i = 0; i < messageHelper.getData().size(); i++) {
-                        db.insertNewInbox(messageHelper.getData().get(i));
-                    }
-                    String msg;
+                    String title;
+                    StringBuilder msg = new StringBuilder();
                     if (messageHelper.getData().size() == 1) {
-                        msg = messageHelper.getData().size() + " New Message";
+                        title = messageHelper.getData().size() + " New Message";
+                        msg.append(messageHelper.getData().get(0).getSrc());
+                        db.insertNewInbox(messageHelper.getData().get(0));
                     } else {
-                        msg = messageHelper.getData().size() + " New Messages";
+                        title = messageHelper.getData().size() + " New Messages";
+                        for (int i = 0; i < messageHelper.getData().size(); i++) {
+                            db.insertNewInbox(messageHelper.getData().get(i));
+                            msg.append(messageHelper.getData().get(i).getSrc());
+                            if (i != messageHelper.getData().size()){
+                                msg.append(", ");
+                            }
+                        }
                     }
                     Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
                     intent.putExtra("polling","newInbox");
                     context.sendBroadcast(intent);
-                    generateNotif(context, msg);
+                    generateNotif(context, title, msg.toString(),"inbox");
                 }
             }
         }
