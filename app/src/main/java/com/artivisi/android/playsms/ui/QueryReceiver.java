@@ -47,24 +47,6 @@ public class QueryReceiver extends BroadcastReceiver {
         }
     }
 
-//    private static void generateNotif(Context context, String message){
-//        int icon = R.drawable.app_notif;
-//        long when = System.currentTimeMillis();
-//
-//        NotificationManager notificationManager = (NotificationManager)
-//                context.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        Notification notification = new Notification(icon, message, when);
-//        notification.defaults |= Notification.DEFAULT_ALL;
-//        String title = context.getString(R.string.app_name);
-//        Intent notificationIntent = new Intent(context, DashboardActivity.class);
-//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-//        notification.setLatestEventInfo(context, title, message, intent);
-//        notification.flags = Notification.FLAG_ONGOING_EVENT;
-//        notificationManager.notify(0, notification);
-//    }
-
     private static void generateNotif(Context context, String title, String message, String type){
         int icon = R.drawable.app_notif;
         long when = System.currentTimeMillis();
@@ -75,7 +57,6 @@ public class QueryReceiver extends BroadcastReceiver {
                 .setWhen(when)
                 .setContentTitle(title)
                 .setContentText(message);
-        mBuilder.setAutoCancel(false);
         Intent result = new Intent(context, DashboardActivity.class);
         result.putExtra("notif_action", type);
         result.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

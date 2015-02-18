@@ -126,30 +126,7 @@ public class DashboardActivity extends ActionBarActivity implements
 
         Intent alarmIntent = new Intent(this, QueryReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-        createNotif(getApplicationContext());
         start();
-    }
-
-    private static void createNotif(Context context){
-        int icon = R.drawable.app_notif;
-        long when = System.currentTimeMillis();
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(icon)
-                        .setWhen(when)
-                        .setContentTitle("playSMS")
-                        .setAutoCancel(false);
-        Intent result = new Intent(context, DashboardActivity.class);
-        result.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(DashboardActivity.class);
-        stackBuilder.addNextIntent(result);
-
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, mBuilder.build());
     }
 
     @Override
@@ -157,7 +134,6 @@ public class DashboardActivity extends ActionBarActivity implements
         super.onNewIntent(intent);
         if(intent.hasExtra("notif_action")){
             if(intent.getStringExtra("notif_action").equals("inbox")){
-                createNotif(getApplicationContext());
                 onNavigationDrawerItemSelected(0);
             }
         } else {
@@ -227,7 +203,13 @@ public class DashboardActivity extends ActionBarActivity implements
         startActivity(goToLogin);
         unregisterReceiver(receiver);
         stop();
+        deleteNotif();
         finish();
+    }
+
+    private void deleteNotif(){
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
     }
 
     public void start(){

@@ -16,6 +16,7 @@
     <dimen name="line_width">1dp</dimen>
     <dimen name="line_layout">2dp</dimen>
 
+
     <dimen name="actionbar_subtitle_text">12dp</dimen>
 
     <dimen name="banner_tittle">60dp</dimen>
@@ -24,6 +25,7 @@
 
     <dimen name="about_text_tittle">24dp</dimen>
     <dimen name="about_text_content">16dp</dimen>
+    <dimen name="about_text_table">14dp</dimen>
 
     <dimen name="edittext_text">20dp</dimen>
 
