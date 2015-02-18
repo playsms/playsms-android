@@ -223,24 +223,33 @@ public class LoginActivity extends Activity {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getInbox();
+            try {
+                return service.getInbox();
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("501")){
-                        Log.i("ERROR : ", "NO INBOX");
+            if(messageHelper == null){
+                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
+            } else {
+                if (messageHelper.getStatus() != null) {
+                    if (messageHelper.getStatus().equals("ERR")) {
+                        if (messageHelper.getError().equals("501")) {
+                            Log.i("ERROR : ", "NO INBOX");
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < messageHelper.getData().size(); i++) {
+                        playSmsDb.insertInbox(messageHelper.getData().get(i));
                     }
                 }
-            } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertInbox(messageHelper.getData().get(i));
-                }
+                showDashboard("login");
             }
-            showDashboard("login");
         }
 
     }
@@ -249,21 +258,30 @@ public class LoginActivity extends Activity {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.getSentMessage();
+            try{
+                return service.getSentMessage();
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("400")){
-                        Log.i("ERROR : ", "NO SENT MESSAGE");
-                    }
-                }
+            if (messageHelper == null){
+                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertSent(messageHelper.getData().get(i));
+                if (messageHelper.getStatus() != null) {
+                    if (messageHelper.getStatus().equals("ERR")) {
+                        if (messageHelper.getError().equals("400")) {
+                            Log.i("ERROR : ", "NO SENT MESSAGE");
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < messageHelper.getData().size(); i++) {
+                        playSmsDb.insertSent(messageHelper.getData().get(i));
+                    }
                 }
             }
         }

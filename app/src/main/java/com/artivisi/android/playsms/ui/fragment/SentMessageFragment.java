@@ -10,10 +10,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -187,33 +187,42 @@ public class SentMessageFragment extends Fragment {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.pollSentMessage(playSmsDb.getLastSent());
+            try{
+                return service.pollSentMessage(playSmsDb.getLastSent());
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             swipeRefreshLayout.setRefreshing(false);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("400")){
-//                        mEmptySentMsg.setVisibility(View.VISIBLE);
-//                        lvSentMessage.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "No New Sent Message", Toast.LENGTH_SHORT).show();
-                    }
-                }
+            if(messageHelper == null){
+                Toast.makeText(getActivity(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
-                if(messageHelper.getData().size() == 1){
-                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Message", Toast.LENGTH_SHORT).show();
+                if (messageHelper.getStatus() != null) {
+                    if (messageHelper.getStatus().equals("ERR")) {
+                        if (messageHelper.getError().equals("400")) {
+                            //                        mEmptySentMsg.setVisibility(View.VISIBLE);
+                            //                        lvSentMessage.setVisibility(View.GONE);
+                            Toast.makeText(getActivity(), "No New Sent Message", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Messages", Toast.LENGTH_SHORT).show();
+                    if (messageHelper.getData().size() == 1) {
+                        Toast.makeText(getActivity(), messageHelper.getData().size() + " New Message", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), messageHelper.getData().size() + " New Messages", Toast.LENGTH_SHORT).show();
+                    }
+                    lvSentMessage.setVisibility(View.VISIBLE);
+                    mEmptySentMsg.setVisibility(View.GONE);
+                    for (int i = 0; i < messageHelper.getData().size(); i++) {
+                        playSmsDb.insertSent(messageHelper.getData().get(i));
+                    }
+                    adapter.updateList();
                 }
-                lvSentMessage.setVisibility(View.VISIBLE);
-                mEmptySentMsg.setVisibility(View.GONE);
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertSent(messageHelper.getData().get(i));
-                }
-                adapter.updateList();
             }
         }
     }

@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,19 +86,28 @@ public class ComposeMessageActivity extends ActionBarActivity {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.sendMessage(to, msg);
+            try {
+                return service.sendMessage(to, msg);
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             sendingMsg.setVisibility(View.INVISIBLE);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    Toast.makeText(getApplicationContext(), messageHelper.getErrorString(), Toast.LENGTH_SHORT).show();
-                }
+            if (messageHelper == null){
+                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Message has been delivered", Toast.LENGTH_SHORT).show();
+                if(messageHelper.getStatus() != null){
+                    if(messageHelper.getStatus().equals("ERR")){
+                        Toast.makeText(getApplicationContext(), messageHelper.getErrorString(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Message has been delivered", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

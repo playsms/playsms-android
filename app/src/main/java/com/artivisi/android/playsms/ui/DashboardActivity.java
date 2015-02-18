@@ -297,15 +297,24 @@ public class DashboardActivity extends ActionBarActivity implements
 
         @Override
         protected Credit doInBackground(Void... params) {
-            return service.getCredit();
+            try {
+                return service.getCredit();
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
          protected void onPostExecute(Credit credit) {
             super.onPostExecute(credit);
-            mCredit = credit.getCredit();
-            if(credit.getError().equals("0")){
-                getSupportActionBar().setSubtitle(mCredit);
+            if (credit == null){
+                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
+            } else {
+                mCredit = credit.getCredit();
+                if(credit.getError().equals("0")){
+                    getSupportActionBar().setSubtitle(mCredit);
+                }
             }
         }
     }

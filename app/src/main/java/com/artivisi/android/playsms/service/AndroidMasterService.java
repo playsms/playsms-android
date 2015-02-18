@@ -11,11 +11,11 @@ import com.artivisi.android.playsms.helper.QueryHelper;
  */
 public interface AndroidMasterService {
     public LoginHelper getToken(String urlServer, String username, String password) throws Exception;
-    public MessageHelper getSentMessage();
-    public MessageHelper getInbox();
-    public MessageHelper sendMessage(String to, String msg);
-    public MessageHelper pollInbox(String id);
-    public MessageHelper pollSentMessage(String smslogId);
-    public Credit getCredit();
-    public QueryHelper query();
+    public MessageHelper getSentMessage() throws Exception;
+    public MessageHelper getInbox() throws Exception;
+    public MessageHelper sendMessage(String to, String msg) throws Exception;
+    public MessageHelper pollInbox(String id) throws Exception;
+    public MessageHelper pollSentMessage(String smslogId) throws Exception;
+    public Credit getCredit() throws Exception;
+    public QueryHelper query() throws Exception;
 }

@@ -1,9 +1,7 @@
 package com.artivisi.android.playsms.ui.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,35 +186,44 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.pollInbox(playSmsDb.getLastInbox());
+            try{
+                return service.pollInbox(playSmsDb.getLastInbox());
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             swipeRefreshLayout.setRefreshing(false);
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("501")){
-//                        mEmptyInbox.setVisibility(View.VISIBLE);
-//                        lvInbox.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "No New Inbox", Toast.LENGTH_SHORT).show();
-                        playSmsDb.readInbox();
-                        adapter.updateList();
-                    }
-                }
+            if(messageHelper == null){
+                Toast.makeText(getActivity(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
-                if(messageHelper.getData().size() == 1){
-                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Message", Toast.LENGTH_SHORT).show();
+                if (messageHelper.getStatus() != null) {
+                    if (messageHelper.getStatus().equals("ERR")) {
+                        if (messageHelper.getError().equals("501")) {
+                            //                        mEmptyInbox.setVisibility(View.VISIBLE);
+                            //                        lvInbox.setVisibility(View.GONE);
+                            Toast.makeText(getActivity(), "No New Inbox", Toast.LENGTH_SHORT).show();
+                            playSmsDb.readInbox();
+                            adapter.updateList();
+                        }
+                    }
                 } else {
-                    Toast.makeText(getActivity(), messageHelper.getData().size() + " New Messages", Toast.LENGTH_SHORT).show();
+                    if (messageHelper.getData().size() == 1) {
+                        Toast.makeText(getActivity(), messageHelper.getData().size() + " New Message", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), messageHelper.getData().size() + " New Messages", Toast.LENGTH_SHORT).show();
+                    }
+                    lvInbox.setVisibility(View.VISIBLE);
+                    mEmptyInbox.setVisibility(View.GONE);
+                    for (int i = 0; i < messageHelper.getData().size(); i++) {
+                        playSmsDb.insertInbox(messageHelper.getData().get(i));
+                    }
+                    adapter.updateList();
                 }
-                lvInbox.setVisibility(View.VISIBLE);
-                mEmptyInbox.setVisibility(View.GONE);
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    playSmsDb.insertInbox(messageHelper.getData().get(i));
-                }
-                adapter.updateList();
             }
         }
 

@@ -50,29 +50,41 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     }
 
     @Override
-    public MessageHelper getSentMessage() {
+    public MessageHelper getSentMessage() throws Exception{
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=ds&format=json";
-        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody();
+        try{
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public MessageHelper getInbox() {
+    public MessageHelper getInbox() throws Exception{
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=ix&format=json";
-        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody();
+        try{
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public MessageHelper sendMessage(String to, String msg) {
+    public MessageHelper sendMessage(String to, String msg) throws Exception{
         String url = PLAYSMS_URL + BASE_URI +
                 "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
-        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public MessageHelper pollInbox(String id) {
+    public MessageHelper pollInbox(String id) throws Exception{
         String url;
         if(id != null){
             url = PLAYSMS_URL + BASE_URI
@@ -88,13 +100,16 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
                     + "&op=ix"
                     + "&format=json";
         }
-
-        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public MessageHelper pollSentMessage(String smslogId) {
+    public MessageHelper pollSentMessage(String smslogId) throws Exception{
         String url;
         if(smslogId != null){
             url = PLAYSMS_URL + BASE_URI
@@ -110,22 +125,33 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
                     + "&op=ds"
                     + "&format=json";
         }
-
-        ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public Credit getCredit() {
+    public Credit getCredit() throws Exception{
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=cr&format=json";
-        ResponseEntity<Credit> responseEntity = restTemplate.getForEntity(url, Credit.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<Credit> responseEntity = restTemplate.getForEntity(url, Credit.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 
     @Override
-    public QueryHelper query() {
+    public QueryHelper query() throws Exception{
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=query&format=json";
-        ResponseEntity<QueryHelper> responseEntity = restTemplate.getForEntity(url, QueryHelper.class);
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<QueryHelper> responseEntity = restTemplate.getForEntity(url, QueryHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
     }
 }

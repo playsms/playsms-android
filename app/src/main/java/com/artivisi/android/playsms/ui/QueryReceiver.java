@@ -11,15 +11,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.helper.QueryHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
-import com.artivisi.android.playsms.ui.adapter.InboxAdapter;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 import com.google.gson.Gson;
 
@@ -106,25 +103,34 @@ public class QueryReceiver extends BroadcastReceiver {
 
         @Override
         protected QueryHelper doInBackground(Void... params) {
-            return service.query();
+            try {
+                return service.query();
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(QueryHelper queryHelper) {
             super.onPostExecute(queryHelper);
             Log.i("DO QUERY : ", "DONE");
-            if(queryHelper.getError().equals("0")){
-
-                if(!queryHelper.getData().getLastId().getUserInbox().equals(lastInbox)){
-                    new GetInbox(context).execute();
-                }
-
-                if(!queryHelper.getData().getLastId().getUserOutgoing().equals(lastSent)){
-                    new GetSentMessage(context).execute();
-                }
-
+            if (queryHelper == null){
+                Log.i("CONNECTION ERROR : ", "TIMEOUT");
             } else {
-                Toast.makeText(context, "Server Error", Toast.LENGTH_SHORT).show();
+                if(queryHelper.getError().equals("0")){
+
+                    if(!queryHelper.getData().getLastId().getUserInbox().equals(lastInbox)){
+                        new GetInbox(context).execute();
+                    }
+
+                    if(!queryHelper.getData().getLastId().getUserOutgoing().equals(lastSent)){
+                        new GetSentMessage(context).execute();
+                    }
+
+                } else {
+                    Log.i("ERROR : ", queryHelper.getErrorString());
+                }
             }
         }
     }
@@ -144,33 +150,42 @@ public class QueryReceiver extends BroadcastReceiver {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.pollInbox(lastInbox);
+            try {
+                return service.pollInbox(lastInbox);
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             Log.i("GET INBOX : ", "DONE");
-            if (messageHelper.getStatus() != null) {
-                if (messageHelper.getStatus().equals("ERR")) {
-                    if (messageHelper.getError().equals("501")) {
-                        Log.i("NEW INBOX", "NO NEW INBOX");
-                    }
-                }
+            if(messageHelper == null){
+                Log.i("CONNECTION ERROR : ", "TIMEOUT");
             } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++) {
-                    db.insertNewInbox(messageHelper.getData().get(i));
-                }
-                String msg;
-                if (messageHelper.getData().size() == 1) {
-                    msg = messageHelper.getData().size() + " New Message";
+                if (messageHelper.getStatus() != null) {
+                    if (messageHelper.getStatus().equals("ERR")) {
+                        if (messageHelper.getError().equals("501")) {
+                            Log.i("NEW INBOX", "NO NEW INBOX");
+                        }
+                    }
                 } else {
-                    msg = messageHelper.getData().size() + " New Messages";
+                    for (int i = 0; i < messageHelper.getData().size(); i++) {
+                        db.insertNewInbox(messageHelper.getData().get(i));
+                    }
+                    String msg;
+                    if (messageHelper.getData().size() == 1) {
+                        msg = messageHelper.getData().size() + " New Message";
+                    } else {
+                        msg = messageHelper.getData().size() + " New Messages";
+                    }
+                    Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
+                    intent.putExtra("polling","newInbox");
+                    context.sendBroadcast(intent);
+                    generateNotif(context, msg);
                 }
-                Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
-                intent.putExtra("polling","newInbox");
-                context.sendBroadcast(intent);
-                generateNotif(context, msg);
             }
         }
 
@@ -192,26 +207,35 @@ public class QueryReceiver extends BroadcastReceiver {
 
         @Override
         protected MessageHelper doInBackground(Void... params) {
-            return service.pollSentMessage(lastSent);
+            try {
+                return service.pollSentMessage(lastSent);
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             Log.i("GET SENT : ", "DONE");
-            if(messageHelper.getStatus() != null){
-                if(messageHelper.getStatus().equals("ERR")){
-                    if(messageHelper.getError().equals("400")){
-                        Log.i("ERROR : ", "NO SENT MESSAGE");
-                    }
-                }
+            if(messageHelper == null){
+                Log.i("CONNECTION ERROR : ", "TIMEOUT");
             } else {
-                for (int i = 0; i < messageHelper.getData().size(); i++){
-                    db.insertSent(messageHelper.getData().get(i));
+                if(messageHelper.getStatus() != null){
+                    if(messageHelper.getStatus().equals("ERR")){
+                        if(messageHelper.getError().equals("400")){
+                            Log.i("ERROR : ", "NO SENT MESSAGE");
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < messageHelper.getData().size(); i++){
+                        db.insertSent(messageHelper.getData().get(i));
+                    }
+                    Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
+                    intent.putExtra("polling","newSent");
+                    context.sendBroadcast(intent);
                 }
-                Intent intent = new Intent(DashboardActivity.DISPLAY_MESSAGE_ACTION);
-                intent.putExtra("polling","newSent");
-                context.sendBroadcast(intent);
             }
         }
     }
