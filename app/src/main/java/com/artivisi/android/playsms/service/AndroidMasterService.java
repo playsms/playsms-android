@@ -14,6 +14,7 @@ public interface AndroidMasterService {
     public MessageHelper getSentMessage() throws Exception;
     public MessageHelper getInbox() throws Exception;
     public MessageHelper sendMessage(String to, String msg) throws Exception;
+    public ContactHelper getContacts();
     public MessageHelper pollInbox(String id) throws Exception;
     public MessageHelper pollSentMessage(String smslogId) throws Exception;
     public Credit getCredit() throws Exception;

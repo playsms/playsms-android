@@ -49,6 +49,8 @@ public class DashboardActivity extends ActionBarActivity implements
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+    public static final String TAG = "DashboardActivity";
+    private ContactsFragment contactsFragment = new ContactsFragment();
 
     public static final String DISPLAY_MESSAGE_ACTION =
             "com.artivisi.android.playsms.DISPLAY_MESSAGE";
@@ -140,6 +142,9 @@ public class DashboardActivity extends ActionBarActivity implements
             return;
         }
     }
+    public void showButtonCompose(){
+        btnComposeMsg.setVisibility(View.VISIBLE);
+    }
 
     public void hideButtonCompose(){
         btnComposeMsg.setVisibility(View.GONE);
@@ -158,16 +163,24 @@ public class DashboardActivity extends ActionBarActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (position){
             case 0:
+		showButtonCompose();
                 fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
             case 1:
+		showButtonCompose();
                 fragmentTransaction.replace(R.id.container, sentMessageFragment);
                 break;
             case 2:
+                // show address book
+                hideButtonCompose();
+                fragmentTransaction.replace(R.id.container, contactsFragment);
+                break;
+            case 3:
+		showButtonCompose();
                 Intent aboutActivity = new Intent(DashboardActivity.this, AboutActivity.class);
                 startActivity(aboutActivity);
                 break;
-            case 3:
+            case 4:
                 signout();
                 break;
             default:
