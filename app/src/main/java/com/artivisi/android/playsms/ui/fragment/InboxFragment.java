@@ -1,6 +1,7 @@
 package com.artivisi.android.playsms.ui.fragment;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -12,6 +13,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -90,6 +94,8 @@ public class InboxFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        setHasOptionsMenu(true);
+
         playSmsDb = new PlaySmsDb(getActivity());
 
         adapter = new InboxAdapter(getActivity());
@@ -135,6 +141,9 @@ public class InboxFragment extends Fragment {
             }
         });
 
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
+
         return rootView;
     }
 
@@ -143,6 +152,14 @@ public class InboxFragment extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem menuItem = menu.add("INBOX");
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menuItem.setEnabled(false);
     }
 
     @Override
@@ -197,6 +214,8 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
             swipeRefreshLayout.setRefreshing(false);
             if(messageHelper == null){
                 Toast.makeText(getActivity(), "Connection Timeout", Toast.LENGTH_SHORT).show();

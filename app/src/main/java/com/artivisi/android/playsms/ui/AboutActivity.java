@@ -1,6 +1,8 @@
 package com.artivisi.android.playsms.ui;
 
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -31,6 +33,10 @@ public class AboutActivity extends ActionBarActivity {
         content3.setTypeface(robotoLight);
     }
 
+    @Override
+    public void onBackPressed() {
+        NavUtils.navigateUpFromSameTask(this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

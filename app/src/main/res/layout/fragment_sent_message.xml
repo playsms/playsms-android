@@ -3,17 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/DefaultLayout"
     tools:context="com.artivisi.android.playsms.ui.fragment.SentMessageFragment">
+    <LinearLayout style="@style/LayoutVertical">
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_list_sent_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_list_sent_msg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <ListView style="@style/MessageListView"
+                android:id="@+id/list_sent_msg"
+                android:visibility="gone" />
 
-        <ListView style="@style/MessageListView"
-            android:id="@+id/list_sent_msg"
-            android:visibility="gone" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
     <TextView style="@style/Banner"
         android:text="Empty"
         android:layout_gravity="center"

@@ -132,6 +132,8 @@ public class DashboardActivity extends ActionBarActivity implements
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
         if(intent.hasExtra("notif_action")){
             if(intent.getStringExtra("notif_action").equals("inbox")){
                 onNavigationDrawerItemSelected(0);
@@ -140,6 +142,7 @@ public class DashboardActivity extends ActionBarActivity implements
             return;
         }
     }
+
 
     public void hideButtonCompose(){
         btnComposeMsg.setVisibility(View.GONE);

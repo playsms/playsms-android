@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -50,13 +51,21 @@ public class QueryReceiver extends BroadcastReceiver {
     private static void generateNotif(Context context, String title, String message, String type){
         int icon = R.drawable.app_notif;
         long when = System.currentTimeMillis();
-        type = "";
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                 .setSmallIcon(icon)
                 .setWhen(when)
                 .setContentTitle(title)
-                .setContentText(message);
+                .setContentText(message)
+                .setDefaults(0)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setLights(Color.BLUE, 500, 500)
+                .setVibrate(null)
+                .setSound(null)
+                .setAutoCancel(true);
+
+        mBuilder.getNotification().flags |= Notification.FLAG_SHOW_LIGHTS| Notification.FLAG_AUTO_CANCEL;
+
         Intent result = new Intent(context, DashboardActivity.class);
         result.putExtra("notif_action", type);
         result.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -174,7 +183,7 @@ public class QueryReceiver extends BroadcastReceiver {
                         for (int i = 0; i < messageHelper.getData().size(); i++) {
                             db.insertNewInbox(messageHelper.getData().get(i));
                             msg.append(messageHelper.getData().get(i).getSrc());
-                            if (i != messageHelper.getData().size()){
+                            if (i != messageHelper.getData().size() - 1){
                                 msg.append(", ");
                             }
                         }
@@ -194,7 +203,7 @@ public class QueryReceiver extends BroadcastReceiver {
 
         public GetSentMessage(Context context) {
             this.context = context;
-            Log.i("GET INBOX : ", "RUNNING");
+            Log.i("GET SENT : ", "RUNNING");
         }
 
         @Override
