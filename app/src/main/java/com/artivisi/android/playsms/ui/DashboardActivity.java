@@ -37,12 +37,15 @@ import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
+import com.artivisi.android.playsms.ui.fragment.ComposerFragment;
+import com.artivisi.android.playsms.ui.fragment.ContactsFragment;
 import com.artivisi.android.playsms.ui.fragment.InboxFragment;
 import com.artivisi.android.playsms.ui.fragment.SentMessageFragment;
 import com.google.gson.Gson;
 
 public class DashboardActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ComposerFragment.OnFragmentInteractionListener,
         SentMessageFragment.OnFragmentInteractionListener,
         InboxFragment.OnFragmentInteractionListener{
 
@@ -63,13 +66,28 @@ public class DashboardActivity extends ActionBarActivity implements
     private CharSequence mTitle;
 
     private SentMessageFragment sentMessageFragment = new SentMessageFragment();
+    private ComposerFragment composeFragment = new ComposerFragment();
     private InboxFragment inboxFragment = new InboxFragment();
     private User user;
     private String mCredit;
     private ImageButton btnComposeMsg;
     private PlaySmsDb playSmsDb;
+    public String msg_destination;
 
     private PendingIntent pendingIntent;
+
+    public void set_subtitle (String text) {
+        getSupportActionBar().setSubtitle(text);
+    }
+    public String gimme_destination() {
+        return msg_destination;
+    }
+
+    public void set_destination(String dst) {
+        msg_destination = dst;
+        return;
+    }
+
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -116,8 +134,7 @@ public class DashboardActivity extends ActionBarActivity implements
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent composeMsg = new Intent(DashboardActivity.this, ComposeMessageActivity.class);
-                startActivity(composeMsg);
+	                show_compose(null);
             }
         });
 
@@ -131,6 +148,17 @@ public class DashboardActivity extends ActionBarActivity implements
         start();
     }
 
+    public  void show_compose(Context context){
+        Log.d(TAG, "show_compose");
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, composeFragment);
+        fragmentTransaction.commit();
+        fragmentTransaction.disallowAddToBackStack();
+    }
+
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -143,11 +171,11 @@ public class DashboardActivity extends ActionBarActivity implements
         }
     }
     public void showButtonCompose(){
-        btnComposeMsg.setVisibility(View.VISIBLE);
+        if (btnComposeMsg!=null) btnComposeMsg.setVisibility(View.VISIBLE);
     }
 
     public void hideButtonCompose(){
-        btnComposeMsg.setVisibility(View.GONE);
+        if (btnComposeMsg!=null) btnComposeMsg.setVisibility(View.GONE);
     }
 
     @Override
