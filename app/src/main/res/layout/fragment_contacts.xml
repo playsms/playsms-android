@@ -1,0 +1,48 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultLayout"
+    tools:context="com.artivisi.android.playsms.ui.fragment.ContactsFragment">
+<LinearLayout android:layout_width="fill_parent"
+              android:orientation="vertical" android:layout_height="fill_parent">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_list_contacts"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="9" >
+
+        <ListView style="@style/MessageListView"
+            android:id="@+id/list_contacts"
+            android:clickable="true"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" android:id="@+id/linearLayout">
+        <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Send"
+                android:id="@+id/Sendbutton"
+                android:layout_alignBottom="@+id/mcslistView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight="1" android:clickable="true"/>
+        <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Select all"
+                android:id="@+id/buttonSelectall"
+                android:layout_weight="1"/>
+        <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Clear"
+                android:id="@+id/buttonClearSelection"
+                android:layout_weight="1" android:clickable="true"/>
+    </LinearLayout>
+</LinearLayout>
+</FrameLayout>
