@@ -32,16 +32,6 @@
             android:exported="true"
             android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
-        <activity
-            android:name=".ui.ComposeMessageActivity"
-            android:label="Compose Message"
-            android:parentActivityName=".ui.DashboardActivity"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan|adjustResize" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.DashboardActivity" />
-        </activity>
 
         <receiver android:name=".ui.QueryReceiver" >
             <intent-filter>

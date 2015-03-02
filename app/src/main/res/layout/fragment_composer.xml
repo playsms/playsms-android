@@ -1,0 +1,47 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        style="@style/DefaultLayout"
+        tools:context="com.efuzone.android.smsclient.ui.ComposeMessageActivity">
+
+    <ProgressBar style="@style/LoadingBarHorizontal"
+                 android:id="@+id/frag_sending_msg" android:visibility="gone"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" >
+        <EditText style="@style/EditText"
+                  android:layout_margin="@dimen/default_component_margin"
+                  android:hint="@string/fragment_composer_to_hint"
+                  android:id="@+id/frag_msg_to" android:layout_width="fill_parent"
+                  android:layout_alignParentEnd="false" android:layout_weight="9" android:textSize="15dp"/>
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="fill_parent"
+                android:id="@+id/frag_contact_picker" android:clickable="true"
+                android:onClick="onContactsClick" android:src="@drawable/ic_contacts"
+                android:visibility="gone"/>
+        <ImageView android:layout_width="50dp" android:layout_height="fill_parent"
+                   android:src="@drawable/ic_person_add" android:onClick="onContactsClick"
+                   android:id="@+id/frag_mass_picker" android:layout_marginRight="5dp" android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <View style="@style/HorizontalDivider" />
+    <EditText style="@style/EditText"
+              android:layout_margin="@dimen/default_component_margin"
+              android:hint="From"
+              android:id="@+id/frag_msg_from" android:layout_width="fill_parent"
+              android:layout_alignParentEnd="false" android:clickable="false" android:enabled="false"
+              android:focusable="false" android:editable="false" android:visibility="gone"/>
+    <View style="@style/HorizontalDivider" />
+    <EditText style="@style/EditText"
+              android:layout_margin="@dimen/default_component_margin"
+              android:singleLine="false"
+              android:layout_height="fill_parent"
+              android:gravity="top"
+              android:hint="@string/fragment_composer_msg_hint"
+              android:id="@+id/frag_msg" android:layout_weight="99"/>
+</LinearLayout>

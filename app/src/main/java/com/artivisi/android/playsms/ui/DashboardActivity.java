@@ -37,18 +37,23 @@ import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
+import com.artivisi.android.playsms.ui.fragment.ComposerFragment;
+import com.artivisi.android.playsms.ui.fragment.ContactsFragment;
 import com.artivisi.android.playsms.ui.fragment.InboxFragment;
 import com.artivisi.android.playsms.ui.fragment.SentMessageFragment;
 import com.google.gson.Gson;
 
 public class DashboardActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ComposerFragment.OnFragmentInteractionListener,
         SentMessageFragment.OnFragmentInteractionListener,
         InboxFragment.OnFragmentInteractionListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
+    public static final String TAG = "DashboardActivity";
+    private ContactsFragment contactsFragment = new ContactsFragment();
 
     public static final String DISPLAY_MESSAGE_ACTION =
             "com.artivisi.android.playsms.DISPLAY_MESSAGE";
@@ -61,13 +66,28 @@ public class DashboardActivity extends ActionBarActivity implements
     private CharSequence mTitle;
 
     private SentMessageFragment sentMessageFragment = new SentMessageFragment();
+    private ComposerFragment composeFragment = new ComposerFragment();
     private InboxFragment inboxFragment = new InboxFragment();
     private User user;
     private String mCredit;
     private ImageButton btnComposeMsg;
     private PlaySmsDb playSmsDb;
+    public String msg_destination;
 
     private PendingIntent pendingIntent;
+
+    public void set_subtitle (String text) {
+        getSupportActionBar().setSubtitle(text);
+    }
+    public String gimme_destination() {
+        return msg_destination;
+    }
+
+    public void set_destination(String dst) {
+        msg_destination = dst;
+        return;
+    }
+
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -114,8 +134,7 @@ public class DashboardActivity extends ActionBarActivity implements
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent composeMsg = new Intent(DashboardActivity.this, ComposeMessageActivity.class);
-                startActivity(composeMsg);
+	                show_compose(null);
             }
         });
 
@@ -128,6 +147,17 @@ public class DashboardActivity extends ActionBarActivity implements
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         start();
     }
+
+    public  void show_compose(Context context){
+        Log.d(TAG, "show_compose");
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, composeFragment);
+        fragmentTransaction.commit();
+        fragmentTransaction.disallowAddToBackStack();
+    }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -142,10 +172,13 @@ public class DashboardActivity extends ActionBarActivity implements
             return;
         }
     }
+    public void showButtonCompose(){
+        if (btnComposeMsg!=null) btnComposeMsg.setVisibility(View.VISIBLE);
+    }
 
 
     public void hideButtonCompose(){
-        btnComposeMsg.setVisibility(View.GONE);
+        if (btnComposeMsg!=null) btnComposeMsg.setVisibility(View.GONE);
     }
 
     @Override
@@ -161,16 +194,24 @@ public class DashboardActivity extends ActionBarActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (position){
             case 0:
+		showButtonCompose();
                 fragmentTransaction.replace(R.id.container, inboxFragment);
                 break;
             case 1:
+		showButtonCompose();
                 fragmentTransaction.replace(R.id.container, sentMessageFragment);
                 break;
             case 2:
+                // show address book
+                hideButtonCompose();
+                fragmentTransaction.replace(R.id.container, contactsFragment);
+                break;
+            case 3:
+		showButtonCompose();
                 Intent aboutActivity = new Intent(DashboardActivity.this, AboutActivity.class);
                 startActivity(aboutActivity);
                 break;
-            case 3:
+            case 4:
                 signout();
                 break;
             default:

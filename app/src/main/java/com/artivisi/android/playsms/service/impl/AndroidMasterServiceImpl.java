@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
+import com.artivisi.android.playsms.helper.ContactHelper;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.helper.QueryHelper;
@@ -23,6 +24,7 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     private User user;
     RestTemplate restTemplate = new RestTemplate();
     private String PLAYSMS_URL;
+    public static final String TAG = "AndroidMasterServiceImpl";
 
     public AndroidMasterServiceImpl(){
         this.restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
@@ -59,6 +61,14 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
         } catch (RuntimeException e){
             throw e;
         }
+    }
+
+    @Override
+    public ContactHelper getContacts() {
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&kwd=%&op=get_contact&format=json";
+        Log.d(TAG, "getContacts "+url);
+        ResponseEntity<ContactHelper> responseEntity = restTemplate.getForEntity(url, ContactHelper.class);
+        return responseEntity.getBody();
     }
 
     @Override
