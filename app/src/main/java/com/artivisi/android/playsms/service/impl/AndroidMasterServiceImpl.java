@@ -11,6 +11,7 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -20,19 +21,19 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
 
 
     private User user;
-    RestTemplate restTemplate = new RestTemplate(true);
+    RestTemplate restTemplate = new RestTemplate();
     private String PLAYSMS_URL;
 
     public AndroidMasterServiceImpl(){
-        this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        ( (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout( 60 * 1000 );
+        this.restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        ( (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout(60 * 1000);
     }
 
     public AndroidMasterServiceImpl(User user) {
         this.user = user;
         PLAYSMS_URL = user.getServerUrl();
-        this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        ( (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout( 60 * 1000 );
+        this.restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        ( (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory() ).setReadTimeout(60 * 1000);
     }
 
 

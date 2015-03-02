@@ -178,7 +178,6 @@ public class LoginActivity extends Activity {
                     user.setUsername(username);
                     user.setToken(loginHelper.getToken());
                     service = new AndroidMasterServiceImpl(user);
-                    new GetInbox().execute();
                     new GetSentMessage().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
                 }
@@ -284,6 +283,7 @@ public class LoginActivity extends Activity {
                         playSmsDb.insertSent(messageHelper.getData().get(i));
                     }
                 }
+                new GetInbox().execute();
             }
         }
     }
