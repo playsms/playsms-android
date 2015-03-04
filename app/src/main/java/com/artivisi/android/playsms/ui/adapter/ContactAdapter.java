@@ -55,8 +55,6 @@ public class ContactAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.list_contact, parent, false);
         }
 
-        LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout_list_contact);
-
         TextView name = (TextView) convertView.findViewById(R.id.txt_name);
         name.setTypeface(robotoLight);
         name.setText(contact.getpDesc());

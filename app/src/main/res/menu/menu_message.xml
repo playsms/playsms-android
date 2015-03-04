@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/action_reply"
+        android:title="Clear"
+        android:titleCondensed="Reply"
+        android:icon="@drawable/reply"
+        android:orderInCategory="97"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_forward"
+        android:title="Forward"
+        android:titleCondensed="Forward"
+        android:icon="@drawable/forward"
+        android:orderInCategory="98"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_copy"
+        android:title="Copy"
+        android:titleCondensed="Copy"
+        android:icon="@drawable/copy"
+        android:orderInCategory="99"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_delete"
+        android:title="Delete"
+        android:icon="@drawable/trash"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+</menu>

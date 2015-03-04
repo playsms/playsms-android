@@ -1,15 +1,21 @@
 package com.artivisi.android.playsms.ui.fragment;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,15 +23,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
+import com.artivisi.android.playsms.domain.Message;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
+import com.artivisi.android.playsms.ui.ComposeMessageActivity;
 import com.artivisi.android.playsms.ui.LoginActivity;
 import com.artivisi.android.playsms.ui.adapter.SentMessageAdapter;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
@@ -57,6 +67,9 @@ public class SentMessageFragment extends Fragment {
     private AndroidMasterService service;
     private PlaySmsDb playSmsDb;
     private SentMessageAdapter adapter;
+    protected Object mActionMode;
+    private Message selectedMessage;
+    private LinearLayout selectedList;
 
     /**
      * Use this factory method to create a new instance of
@@ -110,6 +123,27 @@ public class SentMessageFragment extends Fragment {
         mEmptySentMsg.setVisibility(View.GONE);
         lvSentMessage.setVisibility(View.VISIBLE);
         lvSentMessage.setAdapter(adapter);
+
+        lvSentMessage.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mActionMode != null) {
+                    return false;
+                }
+                selectedMessage = adapter.getItem(position);
+                mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(mActionMoCallback);
+                view.setSelected(true);
+                selectedList = (LinearLayout) view.findViewById(R.id.layout_list_sent_msg);
+
+                if (Build.VERSION.SDK_INT >= 16){
+                    selectedList.setBackground(getActivity().getResources().getDrawable(R.color.white_milk));
+                }
+                else{
+                    selectedList.setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.white_milk));
+                }
+                return true;
+            }
+        });
 
         if(playSmsDb.getAllSent().size() <= 0){
             mEmptySentMsg.setVisibility(View.VISIBLE);
@@ -187,6 +221,78 @@ public class SentMessageFragment extends Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+
+    private ActionMode.Callback mActionMoCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            MenuInflater inflater = actionMode.getMenuInflater();
+            inflater.inflate(R.menu.menu_message, menu);
+            MenuItem resend = menu.findItem(R.id.action_reply);
+            resend.setTitle("Resend");
+            resend.setTitleCondensed("Resend");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+
+            int id = menuItem.getItemId();
+
+            if (Build.VERSION.SDK_INT >= 16){
+                selectedList.setBackground(getActivity().getResources().getDrawable(R.color.grey_light));
+            }
+            else{
+                selectedList.setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.grey_light));
+            }
+
+            if(id == R.id.action_delete){
+                playSmsDb.deleteInbox(selectedMessage.getId());
+                refreshList();
+                Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_LONG).show();
+                actionMode.finish();
+                return  true;
+            } else if (id == R.id.action_copy){
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("copied", selectedMessage.getMsg());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getActivity(), "Copied", Toast.LENGTH_SHORT).show();
+                actionMode.finish();
+                return  true;
+            } else if (id == R.id.action_forward){
+                Intent forwardMsg = new Intent(getActivity(), ComposeMessageActivity.class);
+                forwardMsg.putExtra("msg", selectedMessage.getMsg());
+                startActivity(forwardMsg);
+                actionMode.finish();
+                return  true;
+            } else if (id == R.id.action_reply){
+                Intent forwardMsg = new Intent(getActivity(), ComposeMessageActivity.class);
+                forwardMsg.putExtra("to", selectedMessage.getSrc());
+                forwardMsg.putExtra("msg", selectedMessage.getMsg());
+                startActivity(forwardMsg);
+                actionMode.finish();
+                return  true;
+            } else {
+                return  false;
+            }
+
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+            mActionMode = null;
+            if (Build.VERSION.SDK_INT >= 16){
+                selectedList.setBackground(getActivity().getResources().getDrawable(R.color.grey_light));
+            }
+            else{
+                selectedList.setBackgroundDrawable(getActivity().getResources().getDrawable(R.color.grey_light));
+            }
+        }
+    };
 
     private class GetSentMessage extends AsyncTask<Void, Void, MessageHelper>{
 

@@ -52,6 +52,9 @@ public class ComposeMessageActivity extends ActionBarActivity {
         if(getIntent().hasExtra("to")){
             mMsgTo.setText(getIntent().getStringExtra("to"));
         }
+        if(getIntent().hasExtra("msg")){
+            mMsg.setText(getIntent().getStringExtra("msg"));
+        }
     }
 
 

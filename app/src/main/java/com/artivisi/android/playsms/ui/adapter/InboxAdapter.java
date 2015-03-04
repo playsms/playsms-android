@@ -63,6 +63,7 @@ public class InboxAdapter extends BaseAdapter{
 
         LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout_list_inbox);
 
+
         if(message.getRead() == false){
             if (Build.VERSION.SDK_INT >= 16){
                 layout.setBackground(context.getResources().getDrawable(R.color.white_milk));
@@ -78,6 +79,7 @@ public class InboxAdapter extends BaseAdapter{
                 layout.setBackgroundDrawable(context.getResources().getDrawable(R.color.grey_light));
             }
         }
+
 
         TextView inboxFrom = (TextView) convertView.findViewById(R.id.txt_inbox_from);
         inboxFrom.setText(message.getSrc());

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MessageListLayout">
+    style="@style/MessageListLayout"
+    android:id="@+id/layout_list_sent_msg">
     <LinearLayout style="@style/LayoutVertical">
         <LinearLayout style="@style/LayoutHorizontal">
             <TextView style="@style/MessageTittle"
