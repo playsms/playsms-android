@@ -3,6 +3,7 @@
     style="@style/MessageListLayout"
     android:id="@+id/layout_list_contact">
     <LinearLayout style="@style/LayoutVertical"
+        android:descendantFocusability="blocksDescendants"
         android:layout_weight="1">
         <TextView style="@style/MessageTittle"
             android:textIsSelectable="false"
