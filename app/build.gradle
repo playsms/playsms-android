@@ -15,8 +15,8 @@ android {
         applicationId "com.artivisi.android.playsms"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 9
-        versionName "1.0.9"
+        versionCode 10
+        versionName "1.0.10"
     }
 
     signingConfigs {

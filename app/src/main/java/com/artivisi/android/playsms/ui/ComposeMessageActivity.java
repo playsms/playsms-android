@@ -35,9 +35,8 @@ public class ComposeMessageActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_message);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Message");
-
+        getSupportActionBar().setIcon(R.drawable.pen);
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
 
         service = new AndroidMasterServiceImpl(u);
@@ -116,6 +115,7 @@ public class ComposeMessageActivity extends ActionBarActivity {
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Message has been delivered", Toast.LENGTH_SHORT).show();
+                    mMsgTo.setText("");
                 }
             }
         }

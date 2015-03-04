@@ -75,12 +75,13 @@ public class DashboardActivity extends ActionBarActivity implements
         public void onReceive(Context context, Intent intent) {
             Log.i("RECEIVER : ","DELIVERED");
             String poll = intent.getStringExtra("polling");
+
             if(poll.equals("newInbox")){
                 inboxFragment.refreshList();
             } else if (poll.equals("newSent")){
                 sentMessageFragment.refreshList();
             } else {
-                Log.i("UNKNOWN EXTRAS : ", intent.getStringExtra("polling"));
+                Log.i("EXTRAS : ", "UNKNOWN");
             }
         }
     };
