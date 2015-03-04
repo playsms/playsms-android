@@ -14,8 +14,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -31,6 +29,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.artivisi.android.playsms.ui.adapter.ContactAdapter;
+import com.artivisi.android.playsms.ui.fragment.ContactFragment;
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
@@ -44,7 +44,8 @@ import com.google.gson.Gson;
 public class DashboardActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks,
         SentMessageFragment.OnFragmentInteractionListener,
-        InboxFragment.OnFragmentInteractionListener{
+        InboxFragment.OnFragmentInteractionListener,
+        ContactFragment.OnFragmentInteractionListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -62,11 +63,11 @@ public class DashboardActivity extends ActionBarActivity implements
 
     private SentMessageFragment sentMessageFragment = new SentMessageFragment();
     private InboxFragment inboxFragment = new InboxFragment();
+    private ContactFragment contactFragment = new ContactFragment();
     private User user;
     private String mCredit;
     private ImageButton btnComposeMsg;
     private PlaySmsDb playSmsDb;
-
     private PendingIntent pendingIntent;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -94,7 +95,6 @@ public class DashboardActivity extends ActionBarActivity implements
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         user = getUserCookie(LoginActivity.KEY_USER, User.class);
-
         playSmsDb = new PlaySmsDb(getApplicationContext());
 
         service = new AndroidMasterServiceImpl(user);
@@ -114,7 +114,19 @@ public class DashboardActivity extends ActionBarActivity implements
         btnComposeMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                StringBuilder to = new StringBuilder();
                 Intent composeMsg = new Intent(DashboardActivity.this, ComposeMessageActivity.class);
+                if(contactFragment.adapter != null){
+                    if(contactFragment.adapter.getCount() > 0){
+                        for (int i = 0; i < contactFragment.adapter.getCount(); i++){
+                            if(contactFragment.adapter.getItem(i).isSelected()){
+                                to.append(", " + contactFragment.adapter.getItem(i).getpNum());
+                            }
+                        }
+                        to.delete(0,2);
+                        composeMsg.putExtra("to", to.toString());
+                    }
+                }
                 startActivity(composeMsg);
             }
         });
@@ -167,10 +179,13 @@ public class DashboardActivity extends ActionBarActivity implements
                 fragmentTransaction.replace(R.id.container, sentMessageFragment);
                 break;
             case 2:
+                fragmentTransaction.replace(R.id.container, contactFragment);
+                break;
+            case 3:
                 Intent aboutActivity = new Intent(DashboardActivity.this, AboutActivity.class);
                 startActivity(aboutActivity);
                 break;
-            case 3:
+            case 4:
                 signout();
                 break;
             default:
@@ -198,6 +213,7 @@ public class DashboardActivity extends ActionBarActivity implements
     public void signout(){
         playSmsDb.truncateInbox();
         playSmsDb.truncateSent();
+        playSmsDb.truncateContact();
         SharedPreferences sharedpreferences = getSharedPreferences (LoginActivity.PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();

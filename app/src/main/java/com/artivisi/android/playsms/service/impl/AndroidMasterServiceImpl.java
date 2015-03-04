@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
+import com.artivisi.android.playsms.helper.ContactHelper;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.helper.QueryHelper;
@@ -76,6 +77,7 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     public MessageHelper sendMessage(String to, String msg) throws Exception{
         String url = PLAYSMS_URL + BASE_URI +
                 "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
+        Log.i("URI : ", url);
         try {
             ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
             return responseEntity.getBody();
@@ -150,6 +152,17 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
         String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=query&format=json";
         try {
             ResponseEntity<QueryHelper> responseEntity = restTemplate.getForEntity(url, QueryHelper.class);
+            return responseEntity.getBody();
+        } catch (RuntimeException e){
+            throw e;
+        }
+    }
+
+    @Override
+    public ContactHelper getContact() throws Exception {
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&kwd=%&op=get_contact&format=json";
+        try {
+            ResponseEntity<ContactHelper> responseEntity = restTemplate.getForEntity(url, ContactHelper.class);
             return responseEntity.getBody();
         } catch (RuntimeException e){
             throw e;

@@ -1,6 +1,7 @@
 package com.artivisi.android.playsms.service;
 
 import com.artivisi.android.playsms.domain.Credit;
+import com.artivisi.android.playsms.helper.ContactHelper;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.helper.QueryHelper;
@@ -18,4 +19,5 @@ public interface AndroidMasterService {
     public MessageHelper pollSentMessage(String smslogId) throws Exception;
     public Credit getCredit() throws Exception;
     public QueryHelper query() throws Exception;
+    public ContactHelper getContact() throws Exception;
 }

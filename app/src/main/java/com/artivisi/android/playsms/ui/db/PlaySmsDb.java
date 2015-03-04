@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.artivisi.android.playsms.domain.Contact;
 import com.artivisi.android.playsms.domain.Message;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_TABLE_INBOX = "inbox";
     private static final String DB_TABLE_SENT = "sent";
     private static final String DB_TABLE_USER = "user";
+    private static final String DB_TABLE_CONTACT = "contact";
     private static final String DB_COLUMN_SMSLOG = "smslog_id";
     private static final String DB_COLUMN_ID = "id";
     private static final String DB_COLUMN_SRC = "src";
@@ -38,6 +40,9 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_COLUMN_NAME = "name";
     private static final String DB_COLUMN_EMAIL = "email";
     private static final String DB_COLUMN_CREDIT = "credit";
+    private static final String DB_COLUMN_PID = "pid";
+    private static final String DB_COLUMN_P_DESC = "p_desc";
+    private static final String DB_COLUMN_P_NUM = "p_num";
 
     private SQLiteDatabase sqliteDBInstance = null;
 
@@ -58,13 +63,19 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_UPDATE + " text,"
             + DB_COLUMN_STATUS + " text)";
 
-    private static final String DB_CREATE_TABLE_USER_SCRIPT = "crete table" + DB_TABLE_USER
+    private static final String DB_CREATE_TABLE_USER_SCRIPT = "crete table " + DB_TABLE_USER
             + "(" + DB_COLUMN_USERNAME + " text,"
             + DB_COLUMN_UID + " text,"
             + DB_COLUMN_USER_STATUS + " text,"
             + DB_COLUMN_NAME + " text,"
             + DB_COLUMN_EMAIL + " text,"
             + DB_COLUMN_CREDIT + " text)";
+
+    private static final String DB_CREATE_TABLE_CONTACT_SCRIPT = "create table " + DB_TABLE_CONTACT
+            + "(" + DB_COLUMN_PID + " text,"
+            + DB_COLUMN_P_DESC + " text,"
+            + DB_COLUMN_P_NUM + " text,"
+            + DB_COLUMN_EMAIL + " text)";
 
     public PlaySmsDb(Context context) {
         super(context, DB_NAME, null, DB_VERSION_NUMBER);
@@ -74,6 +85,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DB_CREATE_TABLE_INBOX_SCRIPT);
         db.execSQL(DB_CREATE_TABLE_SENT_SCRIPT);
+        db.execSQL(DB_CREATE_TABLE_CONTACT_SCRIPT);
 //        db.execSQL(DB_CREATE_TABLE_USER_SCRIPT);
     }
 
@@ -83,6 +95,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     }
 
     public void insertInbox(Message message){
+
         int id = Integer.parseInt(message.getId());
         sqliteDBInstance = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -97,8 +110,8 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     }
 
     public void insertNewInbox(Message message){
-        int id = Integer.parseInt(message.getId());
         sqliteDBInstance = getWritableDatabase();
+        int id = Integer.parseInt(message.getId());
         ContentValues contentValues = new ContentValues();
         contentValues.put(DB_COLUMN_ID, id);
         contentValues.put(DB_COLUMN_SRC, message.getSrc());
@@ -189,8 +202,8 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     }
 
     public void insertSent(Message message){
-        int smslog = Integer.parseInt(message.getSmslogId());
         sqliteDBInstance = getWritableDatabase();
+        int smslog = Integer.parseInt(message.getSmslogId());
         ContentValues contentValues = new ContentValues();
         contentValues.put(DB_COLUMN_SMSLOG, smslog);
         contentValues.put(DB_COLUMN_SRC, message.getSrc());
@@ -271,6 +284,63 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         } else {
             sqliteDBInstance.close();
             return null;
+        }
+    }
+
+    //--------------
+    public void insertContact(Contact contact){
+        sqliteDBInstance = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DB_COLUMN_PID, contact.getPid());
+        contentValues.put(DB_COLUMN_P_DESC, contact.getpDesc());
+        contentValues.put(DB_COLUMN_P_NUM, contact.getpNum());
+        contentValues.put(DB_COLUMN_EMAIL, contact.getEmail());
+        this.sqliteDBInstance.insertWithOnConflict(DB_TABLE_CONTACT, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        sqliteDBInstance.close();
+    }
+
+    public void updateContact(Contact contact){
+        sqliteDBInstance = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DB_COLUMN_PID, contact.getPid());
+        contentValues.put(DB_COLUMN_P_DESC, contact.getpDesc());
+        contentValues.put(DB_COLUMN_P_NUM, contact.getpNum());
+        contentValues.put(DB_COLUMN_EMAIL, contact.getEmail());
+        this.sqliteDBInstance.update(DB_TABLE_CONTACT, contentValues, DB_COLUMN_PID + "=?", new String[]{contact.getPid()});
+        sqliteDBInstance.close();
+    }
+
+    public void deleteContact(String id){
+        sqliteDBInstance = getWritableDatabase();
+        this.sqliteDBInstance.delete(DB_TABLE_CONTACT, DB_COLUMN_PID + "=?", new String[]{id});
+        sqliteDBInstance.close();
+    }
+
+    public void truncateContact(){
+        sqliteDBInstance = getWritableDatabase();
+        sqliteDBInstance.execSQL("delete from " + DB_TABLE_CONTACT);
+        sqliteDBInstance.close();
+    }
+
+    public List<Contact> getAllContact(){
+        sqliteDBInstance = getWritableDatabase();
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_CONTACT, new String[]{DB_COLUMN_PID, DB_COLUMN_P_DESC, DB_COLUMN_P_NUM, DB_COLUMN_EMAIL}, null, null, null, null, null);
+        List<Contact> listContact = new ArrayList<Contact>();
+        if(cursor.getCount() > 0){
+            while (cursor.moveToNext()){
+                Contact contact = new Contact();
+                contact.setPid(cursor.getString(cursor.getColumnIndex(DB_COLUMN_PID)));
+                contact.setpDesc(cursor.getString(cursor.getColumnIndex(DB_COLUMN_P_DESC)));
+                contact.setpNum(cursor.getString(cursor.getColumnIndex(DB_COLUMN_P_NUM)));
+                contact.setEmail(cursor.getString(cursor.getColumnIndex(DB_COLUMN_EMAIL)));
+                listContact.add(contact);
+            }
+
+            sqliteDBInstance.close();
+            return  listContact;
+        } else {
+            sqliteDBInstance.close();
+            return new ArrayList<Contact>();
         }
     }
 }

@@ -1,0 +1,22 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultLayout"
+    tools:context="com.artivisi.android.playsms.ui.fragment.ContactFragment">
+    <LinearLayout style="@style/LayoutVertical">
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_list_contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ListView style="@style/MessageListView"
+                android:id="@+id/list_contact"
+                android:visibility="gone"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
+    <TextView style="@style/Banner"
+        android:text="Empty"
+        android:layout_gravity="center"
+        android:id="@+id/contact_empty" />
+</FrameLayout>
+
+

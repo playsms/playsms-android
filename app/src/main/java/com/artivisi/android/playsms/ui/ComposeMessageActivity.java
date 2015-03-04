@@ -42,10 +42,16 @@ public class ComposeMessageActivity extends ActionBarActivity {
 
         service = new AndroidMasterServiceImpl(u);
 
+
+
         mMsgTo = (EditText) findViewById(R.id.txt_msg_to);
         mMsg = (EditText) findViewById(R.id.txt_msg);
         sendingMsg = (ProgressBar) findViewById(R.id.sending_msg);
         sendingMsg.setVisibility(View.INVISIBLE);
+
+        if(getIntent().hasExtra("to")){
+            mMsgTo.setText(getIntent().getStringExtra("to"));
+        }
     }
 
 

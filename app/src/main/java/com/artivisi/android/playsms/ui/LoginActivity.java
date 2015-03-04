@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
+import com.artivisi.android.playsms.helper.ContactHelper;
 import com.artivisi.android.playsms.helper.LoginHelper;
 import com.artivisi.android.playsms.helper.MessageHelper;
 import com.artivisi.android.playsms.service.AndroidMasterService;
@@ -178,7 +179,7 @@ public class LoginActivity extends Activity {
                     user.setUsername(username);
                     user.setToken(loginHelper.getToken());
                     service = new AndroidMasterServiceImpl(user);
-                    new GetSentMessage().execute();
+                    new GetContact().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
                 }
             }
@@ -284,6 +285,40 @@ public class LoginActivity extends Activity {
                     }
                 }
                 new GetInbox().execute();
+            }
+        }
+    }
+
+    private class GetContact extends AsyncTask<Void, Void, ContactHelper>{
+
+        @Override
+        protected ContactHelper doInBackground(Void... params) {
+            try{
+                return service.getContact();
+            } catch (Exception e) {
+                Log.d("CONNECTION ERROR : ", e.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ContactHelper contactHelper) {
+            super.onPostExecute(contactHelper);
+            if (contactHelper == null){
+                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
+            } else {
+                if (contactHelper.getStatus() != null) {
+                    if (contactHelper.getStatus().equals("OK")) {
+                        if (contactHelper.getError().equals("0")) {
+                            for (int i = 0; i < contactHelper.getData().size(); i++) {
+                                playSmsDb.insertContact(contactHelper.getData().get(i));
+                            }
+                        }
+                    } else {
+                        Log.i("ERROR : ", "NO CONTACT");
+                    }
+                }
+                new GetSentMessage().execute();
             }
         }
     }

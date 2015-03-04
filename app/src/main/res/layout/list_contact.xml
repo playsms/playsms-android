@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MessageListLayout"
+    android:descendantFocusability="blocksDescendants"
+    android:id="@+id/layout_list_contact">
+    <LinearLayout style="@style/LayoutVertical"
+        android:descendantFocusability="blocksDescendants"
+        android:layout_weight="1">
+        <TextView style="@style/MessageTittle"
+            android:descendantFocusability="blocksDescendants"
+            android:textIsSelectable="false"
+            android:id="@+id/txt_name"
+            android:layout_weight="1"
+            android:text="08989899307" />
+        <TextView style="@style/MessageSubtittle"
+            android:descendantFocusability="blocksDescendants"
+            android:textIsSelectable="false"
+            android:id="@+id/txt_number"
+            android:layout_weight="1"
+            android:text="Test" />
+    </LinearLayout>
+    <CheckBox style="@style/LayoutMatchParent"
+        android:id="@+id/checkbox_contact"
+        android:checked="false"
+        android:layout_weight="8"/>
+</LinearLayout>
