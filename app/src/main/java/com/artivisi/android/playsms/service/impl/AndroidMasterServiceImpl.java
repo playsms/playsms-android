@@ -15,6 +15,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+
 /**
  * Created by opaw on 2/5/15.
  */
@@ -77,9 +79,9 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
     public MessageHelper sendMessage(String to, String msg) throws Exception{
         String url = PLAYSMS_URL + BASE_URI +
                 "&u=" + user.getUsername() + "&h=" + user.getToken() + "&op=pv&to=" + to + "&msg=" + msg + "&format=json";
-        Log.i("URI : ", url);
+        URI uri = new URI(url);
         try {
-            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(url, MessageHelper.class);
+            ResponseEntity<MessageHelper> responseEntity = restTemplate.getForEntity(uri, MessageHelper.class);
             return responseEntity.getBody();
         } catch (RuntimeException e){
             throw e;

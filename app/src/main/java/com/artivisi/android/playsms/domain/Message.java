@@ -18,6 +18,7 @@ public class Message {
     private String error;
     private String queue;
     private String to;
+    private Boolean deleted;
     private Boolean read;
 
     public String getId() {
@@ -106,6 +107,14 @@ public class Message {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Boolean getRead() {

@@ -222,7 +222,7 @@ public class InboxFragment extends Fragment {
             }
 
             if(id == R.id.action_delete){
-                playSmsDb.deleteInbox(selectedMessage.getId());
+                playSmsDb.deleteInboxLocally(selectedMessage.getId());
                 refreshList();
                 Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_LONG).show();
                 actionMode.finish();

@@ -102,6 +102,7 @@ public class SentMessageFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu(true);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         playSmsDb = new PlaySmsDb(getActivity());
         adapter = new SentMessageAdapter(getActivity());
         User u = getUserCookie(LoginActivity.KEY_USER, User.class);
@@ -115,7 +116,6 @@ public class SentMessageFragment extends Fragment {
         // Inflate the layout for this fragment
 
         rootView = inflater.inflate(R.layout.fragment_sent_message, container, false);
-
         mEmptySentMsg = (TextView) rootView.findViewById(R.id.sent_msg_empty);
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
@@ -251,7 +251,7 @@ public class SentMessageFragment extends Fragment {
             }
 
             if(id == R.id.action_delete){
-                playSmsDb.deleteInbox(selectedMessage.getId());
+                playSmsDb.deleteSentLocally(selectedMessage.getSmslogId());
                 refreshList();
                 Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_LONG).show();
                 actionMode.finish();

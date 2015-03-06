@@ -159,13 +159,12 @@ public class ContactFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(false);
-//                if(isNetworkAvailable()){
-//                    new GetContact().execute();
-//                } else {
-//                    Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
-//                    swipeRefreshLayout.setRefreshing(false);
-//                }
+                if(isNetworkAvailable()){
+                    new GetContact().execute();
+                } else {
+                    Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
         });
         return rootView;
@@ -269,17 +268,21 @@ public class ContactFragment extends Fragment {
                 Toast.makeText(getActivity(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
                 if (contactHelper.getStatus() != null) {
-                    if (contactHelper.getStatus() != null) {
-                        if (contactHelper.getStatus().equals("OK")) {
-                            if (contactHelper.getError().equals("0")) {
-                                for (int i = 0; i < contactHelper.getData().size(); i++) {
-                                    playSmsDb.insertContact(contactHelper.getData().get(i));
-                                }
-                                refreshList();
-                            }
+                    if (contactHelper.getError().equals("0")) {
+                        if(contactHelper.getData() == null){
+                            playSmsDb.truncateContact();
+                            lvContact.setVisibility(View.GONE);
+                            mEmptyContact.setVisibility(View.VISIBLE);
+                        } else if(playSmsDb.getAllContact().size() == contactHelper.getData().size()){
+                            Toast.makeText(getActivity(), "No New Contact", Toast.LENGTH_SHORT).show();
                         } else {
-                            Log.i("ERROR : ", "NO CONTACT");
+                            for (int i = 0; i < contactHelper.getData().size(); i++) {
+                                playSmsDb.insertContact(contactHelper.getData().get(i));
+                            }
+                            refreshList();
                         }
+                    } else {
+                        Log.i("ERROR : ", "NO CONTACT");
                     }
                 }
             }

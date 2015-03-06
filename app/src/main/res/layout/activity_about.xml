@@ -88,7 +88,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/table_bg"
                     android:layout_weight="1"
-                    android:text="1.0.10" />
+                    android:text="1.0.11" />
                 <TextView style="@style/AboutTextContent"
                     android:layout_height="match_parent"
                     android:background="@drawable/table_bg"

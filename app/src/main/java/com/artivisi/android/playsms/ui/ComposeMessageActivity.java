@@ -22,6 +22,9 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class ComposeMessageActivity extends ActionBarActivity {
 
     private String to;
@@ -74,7 +77,12 @@ public class ComposeMessageActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_send) {
             if(isNetworkAvailable()){
-                msg = mMsg.getText().toString();
+                try {
+                    msg = URLEncoder.encode(mMsg.getText().toString(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    msg = mMsg.getText().toString();
+                }
                 to = mMsgTo.getText().toString().trim();
                 new SendMessage().execute();
             } else {

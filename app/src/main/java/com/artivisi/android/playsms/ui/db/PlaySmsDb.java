@@ -10,8 +10,13 @@ import android.util.Log;
 import com.artivisi.android.playsms.domain.Contact;
 import com.artivisi.android.playsms.domain.Message;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by opaw on 2/12/15.
@@ -30,6 +35,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_COLUMN_SRC = "src";
     private static final String DB_COLUMN_DST = "dst";
     private static final String DB_COLUMN_MSG = "msg";
+    private static final String DB_COLUMN_MSG_DELETED = "deleted";
     private static final String DB_COLUMN_DT = "dt";
     private static final String DB_COLUMN_UPDATE = "updt";
     private static final String DB_COLUMN_STATUS = "status";
@@ -52,6 +58,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_DST + " text,"
             + DB_COLUMN_MSG + " text,"
             + DB_COLUMN_DT + " text,"
+            + DB_COLUMN_MSG_DELETED + " integer,"
             + DB_COLUMN_READ + " int)";
 
     private static final String DB_CREATE_TABLE_SENT_SCRIPT = "create table " + DB_TABLE_SENT
@@ -61,7 +68,8 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_MSG + " text,"
             + DB_COLUMN_DT + " text,"
             + DB_COLUMN_UPDATE + " text,"
-            + DB_COLUMN_STATUS + " text)";
+            + DB_COLUMN_STATUS + " text,"
+            + DB_COLUMN_MSG_DELETED + " integer)";
 
     private static final String DB_CREATE_TABLE_USER_SCRIPT = "crete table " + DB_TABLE_USER
             + "(" + DB_COLUMN_USERNAME + " text,"
@@ -118,8 +126,17 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         contentValues.put(DB_COLUMN_DST, message.getDst());
         contentValues.put(DB_COLUMN_MSG, message.getMsg());
         contentValues.put(DB_COLUMN_DT, message.getDt());
+        contentValues.put(DB_COLUMN_MSG_DELETED, 0);
         contentValues.put(DB_COLUMN_READ, 0);
         this.sqliteDBInstance.insertWithOnConflict(DB_TABLE_INBOX, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        sqliteDBInstance.close();
+    }
+
+    public void deleteInboxLocally(String id){
+        sqliteDBInstance = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DB_COLUMN_MSG_DELETED, 1);
+        this.sqliteDBInstance.update(DB_TABLE_INBOX, contentValues, "id=?", new String[]{id});
         sqliteDBInstance.close();
     }
 
@@ -157,19 +174,21 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public List<Message> getAllInbox(){
         this.sqliteDBInstance = getWritableDatabase();
-        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_INBOX, new String[]{DB_COLUMN_ID, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_READ}, null, null, null, null, DB_COLUMN_ID + " DESC");
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_INBOX, new String[]{DB_COLUMN_ID, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_MSG_DELETED, DB_COLUMN_READ}, null, null, null, null, DB_COLUMN_ID + " DESC");
         List<Message> listInbox = new ArrayList<Message>();
         if(cursor.getCount() > 0){
             while (cursor.moveToNext()){
-                Message message = new Message();
-                message.setId(cursor.getString(cursor.getColumnIndex(DB_COLUMN_ID)));
-                message.setSrc(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SRC)));
-                message.setDst(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DST)));
-                message.setMsg(cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
-                message.setDt(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DT)));
-                Boolean read = (cursor.getInt(cursor.getColumnIndex(DB_COLUMN_READ)) == 1 ? true : false);
-                message.setRead(read);
-                listInbox.add(message);
+                if(cursor.getInt(cursor.getColumnIndex(DB_COLUMN_MSG_DELETED)) == 0){
+                    Message message = new Message();
+                    message.setId(cursor.getString(cursor.getColumnIndex(DB_COLUMN_ID)));
+                    message.setSrc(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SRC)));
+                    message.setDst(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DST)));
+                    message.setMsg(cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
+                    message.setDt(timeParser(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DT))));
+                    Boolean read = (cursor.getInt(cursor.getColumnIndex(DB_COLUMN_READ)) == 1 ? true : false);
+                    message.setRead(read);
+                    listInbox.add(message);
+                }
             }
 
             this.sqliteDBInstance.close();
@@ -212,6 +231,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         contentValues.put(DB_COLUMN_DT, message.getDt());
         contentValues.put(DB_COLUMN_UPDATE, message.getUpdate());
         contentValues.put(DB_COLUMN_STATUS, message.getStatus());
+        contentValues.put(DB_COLUMN_MSG_DELETED, 0);
         this.sqliteDBInstance.insertWithOnConflict(DB_TABLE_SENT, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         sqliteDBInstance.close();
     }
@@ -229,6 +249,14 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         sqliteDBInstance.close();
     }
 
+    public void deleteSentLocally(String id){
+        sqliteDBInstance = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DB_COLUMN_MSG_DELETED, 1);
+        this.sqliteDBInstance.update(DB_TABLE_SENT, contentValues, "smslog_id=?", new String[]{id});
+        sqliteDBInstance.close();
+    }
+
     public void deleteSent(String id){
         sqliteDBInstance = getWritableDatabase();
         this.sqliteDBInstance.delete(DB_TABLE_SENT, "smslog_id=?", new String[]{String.valueOf(id)});
@@ -243,19 +271,25 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     public List<Message> getAllSent(){
         sqliteDBInstance = getWritableDatabase();
-        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SENT, new String[]{DB_COLUMN_SMSLOG, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_UPDATE, DB_COLUMN_STATUS}, null, null, null, null, DB_COLUMN_SMSLOG + " DESC");
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SENT, new String[]{DB_COLUMN_SMSLOG, DB_COLUMN_SRC, DB_COLUMN_DST, DB_COLUMN_MSG, DB_COLUMN_DT, DB_COLUMN_UPDATE, DB_COLUMN_STATUS, DB_COLUMN_MSG_DELETED}, null, null, null, null, DB_COLUMN_SMSLOG + " DESC");
         List<Message> listInbox = new ArrayList<Message>();
         if(cursor.getCount() > 0){
             while (cursor.moveToNext()){
-                Message message = new Message();
-                message.setSmslogId(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SMSLOG)));
-                message.setSrc(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SRC)));
-                message.setDst(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DST)));
-                message.setMsg(cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
-                message.setDt(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DT)));
-                message.setUpdate(cursor.getString(cursor.getColumnIndex(DB_COLUMN_UPDATE)));
-                message.setStatus(cursor.getString(cursor.getColumnIndex(DB_COLUMN_STATUS)));
-                listInbox.add(message);
+                Log.i("deleted : ", cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG_DELETED)));
+                if(cursor.getInt(cursor.getColumnIndex(DB_COLUMN_MSG_DELETED)) == 0) {
+                    Message message = new Message();
+                    Log.i("ga delet : ", cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
+                    message.setSmslogId(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SMSLOG)));
+                    message.setSrc(cursor.getString(cursor.getColumnIndex(DB_COLUMN_SRC)));
+                    message.setDst(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DST)));
+                    message.setMsg(cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
+                    message.setDt(timeParser(cursor.getString(cursor.getColumnIndex(DB_COLUMN_DT))));
+                    message.setUpdate(cursor.getString(cursor.getColumnIndex(DB_COLUMN_UPDATE)));
+                    message.setStatus(cursor.getString(cursor.getColumnIndex(DB_COLUMN_STATUS)));
+                    listInbox.add(message);
+                } else {
+                    Log.i("ga delet : ", cursor.getString(cursor.getColumnIndex(DB_COLUMN_MSG)));
+                }
             }
 
             sqliteDBInstance.close();
@@ -342,5 +376,21 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             sqliteDBInstance.close();
             return new ArrayList<Contact>();
         }
+    }
+
+    public String timeParser(String date){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        Date formattedDate;
+        try {
+            formattedDate = formatter.parse(date);
+            return formatter.format(formattedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date;
+        }
+
     }
 }

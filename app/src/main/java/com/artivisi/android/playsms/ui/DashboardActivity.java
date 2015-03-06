@@ -30,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.ui.adapter.ContactAdapter;
+import com.artivisi.android.playsms.ui.adapter.SentMessageAdapter;
 import com.artivisi.android.playsms.ui.fragment.ContactFragment;
 import com.artivisi.android.playsms.R;
 import com.artivisi.android.playsms.domain.Credit;
@@ -78,10 +79,10 @@ public class DashboardActivity extends ActionBarActivity implements
 
             if(poll.equals("newInbox")){
                 inboxFragment.refreshList();
-            } else if (poll.equals("newSent")){
-                sentMessageFragment.refreshList();
-            } else {
-                Log.i("EXTRAS : ", "UNKNOWN");
+            }
+
+            if (poll.equals("newSent")){
+                new SentMessageAdapter(getApplicationContext()).updateList();
             }
         }
     };
@@ -221,7 +222,6 @@ public class DashboardActivity extends ActionBarActivity implements
         editor.commit();
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
-        unregisterReceiver(receiver);
         stop();
         deleteNotif();
         finish();

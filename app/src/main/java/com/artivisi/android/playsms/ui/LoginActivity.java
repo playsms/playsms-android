@@ -168,9 +168,6 @@ public class LoginActivity extends Activity {
             if(loginHelper == null){
                 txtServerError.setVisibility(View.VISIBLE);
             } else {
-                if(loginHelper.getError().equals("100")){
-                    textLoginError.setVisibility(View.VISIBLE);
-                }
                 if(loginHelper.getError().equals("0")){
                     textLoginError.setVisibility(View.INVISIBLE);
                     Gson gson = new Gson();
@@ -181,6 +178,9 @@ public class LoginActivity extends Activity {
                     service = new AndroidMasterServiceImpl(user);
                     new GetContact().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
+                } else {
+                    textLoginError.setText(loginHelper.getErrorString());
+                    textLoginError.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -310,8 +310,10 @@ public class LoginActivity extends Activity {
                 if (contactHelper.getStatus() != null) {
                     if (contactHelper.getStatus().equals("OK")) {
                         if (contactHelper.getError().equals("0")) {
-                            for (int i = 0; i < contactHelper.getData().size(); i++) {
-                                playSmsDb.insertContact(contactHelper.getData().get(i));
+                            if(contactHelper.getData() != null){
+                                for (int i = 0; i < contactHelper.getData().size(); i++) {
+                                    playSmsDb.insertContact(contactHelper.getData().get(i));
+                                }
                             }
                         }
                     } else {
