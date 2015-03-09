@@ -120,9 +120,9 @@ public class SentMessageFragment extends Fragment {
         lvSentMessage = (ListView) rootView.findViewById(R.id.list_sent_msg);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_list_sent_msg);
 
-        mEmptySentMsg.setVisibility(View.GONE);
-        lvSentMessage.setVisibility(View.VISIBLE);
         lvSentMessage.setAdapter(adapter);
+
+        refreshList();
 
         lvSentMessage.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -145,12 +145,6 @@ public class SentMessageFragment extends Fragment {
             }
         });
 
-        if(playSmsDb.getAllSent().size() <= 0){
-            mEmptySentMsg.setVisibility(View.VISIBLE);
-            lvSentMessage.setVisibility(View.GONE);
-
-        }
-
         swipeRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_red_light,
                 android.R.color.holo_green_dark,
@@ -170,9 +164,15 @@ public class SentMessageFragment extends Fragment {
     }
 
     public void refreshList(){
-        mEmptySentMsg.setVisibility(View.GONE);
-        lvSentMessage.setVisibility(View.VISIBLE);
-        adapter.updateList();
+        if(playSmsDb.getAllSent().size() <= 0){
+            mEmptySentMsg.setVisibility(View.VISIBLE);
+            lvSentMessage.setVisibility(View.GONE);
+
+        } else {
+            adapter.updateList();
+            mEmptySentMsg.setVisibility(View.GONE);
+            lvSentMessage.setVisibility(View.VISIBLE);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -322,8 +322,6 @@ public class SentMessageFragment extends Fragment {
                 if (messageHelper.getStatus() != null) {
                     if (messageHelper.getStatus().equals("ERR")) {
                         if (messageHelper.getError().equals("400")) {
-                            //                        mEmptySentMsg.setVisibility(View.VISIBLE);
-                            //                        lvSentMessage.setVisibility(View.GONE);
                             Toast.makeText(getActivity(), "No New Sent Message", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -338,7 +336,7 @@ public class SentMessageFragment extends Fragment {
                     for (int i = 0; i < messageHelper.getData().size(); i++) {
                         playSmsDb.insertSent(messageHelper.getData().get(i));
                     }
-                    adapter.updateList();
+                    refreshList();
                 }
             }
         }

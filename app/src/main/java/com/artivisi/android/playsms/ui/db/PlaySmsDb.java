@@ -381,16 +381,16 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     public String timeParser(String date){
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Date formattedDate;
         try {
             formattedDate = formatter.parse(date);
+            formatter.setTimeZone(TimeZone.getDefault());
             return formatter.format(formattedDate);
         } catch (ParseException e) {
             e.printStackTrace();
             return date;
         }
-
     }
 }

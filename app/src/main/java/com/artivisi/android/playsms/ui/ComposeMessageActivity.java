@@ -79,9 +79,11 @@ public class ComposeMessageActivity extends ActionBarActivity {
             if(isNetworkAvailable()){
                 try {
                     msg = URLEncoder.encode(mMsg.getText().toString(), "UTF-8");
+                    to = URLEncoder.encode(mMsgTo.getText().toString(), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     msg = mMsg.getText().toString();
+                    to = mMsgTo.getText().toString();
                 }
                 to = mMsgTo.getText().toString().trim();
                 new SendMessage().execute();

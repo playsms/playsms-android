@@ -133,9 +133,9 @@ public class InboxFragment extends Fragment {
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_light);
 
-        mEmptyInbox.setVisibility(View.GONE);
-        lvInbox.setVisibility(View.VISIBLE);
         lvInbox.setAdapter(adapter);
+
+        refreshList();
 
         lvInbox.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -157,11 +157,6 @@ public class InboxFragment extends Fragment {
                 return true;
             }
         });
-
-        if (playSmsDb.getAllInbox().size() <= 0){
-            mEmptyInbox.setVisibility(View.VISIBLE);
-            lvInbox.setVisibility(View.GONE);
-        }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -326,8 +321,6 @@ public class InboxFragment extends Fragment {
                 if (messageHelper.getStatus() != null) {
                     if (messageHelper.getStatus().equals("ERR")) {
                         if (messageHelper.getError().equals("501")) {
-                            //                        mEmptyInbox.setVisibility(View.VISIBLE);
-                            //                        lvInbox.setVisibility(View.GONE);
                             Toast.makeText(getActivity(), "No New Inbox", Toast.LENGTH_SHORT).show();
                             playSmsDb.readInbox();
                             adapter.updateList();
@@ -344,7 +337,7 @@ public class InboxFragment extends Fragment {
                     for (int i = 0; i < messageHelper.getData().size(); i++) {
                         playSmsDb.insertInbox(messageHelper.getData().get(i));
                     }
-                    adapter.updateList();
+                    refreshList();
                 }
             }
         }
@@ -352,9 +345,14 @@ public class InboxFragment extends Fragment {
     }
 
     public void refreshList(){
-        mEmptyInbox.setVisibility(View.GONE);
-        lvInbox.setVisibility(View.VISIBLE);
-        adapter.updateList();
+        if (playSmsDb.getAllInbox().size() <= 0){
+            mEmptyInbox.setVisibility(View.VISIBLE);
+            lvInbox.setVisibility(View.GONE);
+        } else {
+            adapter.updateList();
+            mEmptyInbox.setVisibility(View.GONE);
+            lvInbox.setVisibility(View.VISIBLE);
+        }
     }
 
     protected <T> T getUserCookie(String key, Class<T> a) {
