@@ -17,7 +17,7 @@ This Android app uses playSMS Web Services API.
 Info              | Value               | URL
 ----------------- | ------------------- | -------------------------------------------
 Update            | TBA                 |
-Version           | 1.0.12               |
+Version           | 1.0.13              |
 Project           | playSMS for Android |
 Founder           | Anton Raharja       | http://antonraharja.com
 Co. Founder       | Endy Muhardin       | http://software.endy.muhardin.com

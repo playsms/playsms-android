@@ -85,7 +85,7 @@ public class ComposeMessageActivity extends ActionBarActivity {
                     msg = mMsg.getText().toString();
                     to = mMsgTo.getText().toString();
                 }
-                to = mMsgTo.getText().toString().trim();
+                to = to.trim();
                 new SendMessage().execute();
             } else {
                 Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
