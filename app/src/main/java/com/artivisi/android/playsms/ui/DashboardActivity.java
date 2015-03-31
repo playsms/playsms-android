@@ -220,6 +220,7 @@ public class DashboardActivity extends ActionBarActivity implements
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
+        unregisterReceiver(receiver);
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
         stop();

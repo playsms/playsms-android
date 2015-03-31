@@ -30,6 +30,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_TABLE_SENT = "sent";
     private static final String DB_TABLE_USER = "user";
     private static final String DB_TABLE_CONTACT = "contact";
+    private static final String DB_TABLE_SERVER = "server";
     private static final String DB_COLUMN_SMSLOG = "smslog_id";
     private static final String DB_COLUMN_ID = "id";
     private static final String DB_COLUMN_SRC = "src";
@@ -49,6 +50,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     private static final String DB_COLUMN_PID = "pid";
     private static final String DB_COLUMN_P_DESC = "p_desc";
     private static final String DB_COLUMN_P_NUM = "p_num";
+    private static final String DB_COLUMN_URL = "url";
 
     private SQLiteDatabase sqliteDBInstance = null;
 
@@ -85,6 +87,9 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_P_NUM + " text,"
             + DB_COLUMN_EMAIL + " text)";
 
+    private static final String DB_CREATE_TABLE_SERVER_SCRIPT = "create table " + DB_TABLE_SERVER
+            + "(" + DB_COLUMN_URL + " text)";
+
     public PlaySmsDb(Context context) {
         super(context, DB_NAME, null, DB_VERSION_NUMBER);
     }
@@ -94,6 +99,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         db.execSQL(DB_CREATE_TABLE_INBOX_SCRIPT);
         db.execSQL(DB_CREATE_TABLE_SENT_SCRIPT);
         db.execSQL(DB_CREATE_TABLE_CONTACT_SCRIPT);
+        db.execSQL(DB_CREATE_TABLE_SERVER_SCRIPT);
 //        db.execSQL(DB_CREATE_TABLE_USER_SCRIPT);
     }
 
@@ -321,7 +327,6 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         }
     }
 
-    //--------------
     public void insertContact(Contact contact){
         sqliteDBInstance = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -391,6 +396,39 @@ public class PlaySmsDb extends SQLiteOpenHelper {
         } catch (ParseException e) {
             e.printStackTrace();
             return date;
+        }
+    }
+
+    public void insertServer(String server) {
+        if(getLastServer().equals("")){
+            sqliteDBInstance = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DB_COLUMN_URL, server);
+            sqliteDBInstance.insertWithOnConflict(DB_TABLE_SERVER, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
+            sqliteDBInstance.close();
+        } else {
+            sqliteDBInstance = getWritableDatabase();
+            sqliteDBInstance.execSQL("delete from " + DB_TABLE_SERVER);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DB_COLUMN_URL, server);
+            sqliteDBInstance.insertWithOnConflict(DB_TABLE_SERVER, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
+            sqliteDBInstance.close();
+        }
+    }
+
+    public String getLastServer(){
+        sqliteDBInstance = getWritableDatabase();
+        String server = "";
+        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SERVER, new String[]{DB_COLUMN_URL}, null, null, null, null, null, "1");
+        if(cursor.getCount() > 0){
+            while (cursor.moveToNext()){
+                server = cursor.getString(cursor.getColumnIndex(DB_COLUMN_URL));
+            }
+            sqliteDBInstance.close();
+            return server;
+        } else {
+            sqliteDBInstance.close();
+            return server;
         }
     }
 }

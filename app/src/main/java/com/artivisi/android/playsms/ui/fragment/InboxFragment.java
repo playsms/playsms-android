@@ -76,6 +76,7 @@ public class InboxFragment extends Fragment {
     protected Object mActionMode;
     private Message selectedMessage;
     private LinearLayout selectedList;
+    private NotificationManager notificationManager;
 
     /**
      * Use this factory method to create a new instance of
@@ -169,8 +170,8 @@ public class InboxFragment extends Fragment {
                 }
             }
         });
-
-        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null)
+        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
 
         return rootView;
@@ -312,7 +313,8 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
-            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager == null)
+            notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(0);
             swipeRefreshLayout.setRefreshing(false);
             if(messageHelper == null){

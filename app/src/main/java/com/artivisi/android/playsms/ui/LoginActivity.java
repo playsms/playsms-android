@@ -1,7 +1,6 @@
 package com.artivisi.android.playsms.ui;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.artivisi.android.playsms.R;
-import com.artivisi.android.playsms.domain.Credit;
 import com.artivisi.android.playsms.domain.User;
 import com.artivisi.android.playsms.helper.ContactHelper;
 import com.artivisi.android.playsms.helper.LoginHelper;
@@ -28,6 +28,9 @@ import com.artivisi.android.playsms.service.AndroidMasterService;
 import com.artivisi.android.playsms.service.impl.AndroidMasterServiceImpl;
 import com.artivisi.android.playsms.ui.db.PlaySmsDb;
 import com.google.gson.Gson;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public class LoginActivity extends Activity {
@@ -84,6 +87,7 @@ public class LoginActivity extends Activity {
 
         mServerUrl = (EditText) findViewById(R.id.server_url);
         mServerUrl.setTypeface(ralewayRegular);
+        mServerUrl.setText(playSmsDb.getLastServer());
 
         mUsername = (EditText) findViewById(R.id.username);
         mUsername.setTypeface(ralewayRegular);
@@ -124,15 +128,23 @@ public class LoginActivity extends Activity {
                             mPassword.setFocusable(true);
                         }
                     } else {
-                        if (serverUrl.contains(".") && serverUrl.contains("http://") || serverUrl.contains("https://")){
-                            mServerUrl.setError(null);
-                            mUsername.setError(null);
-                            mPassword.setError(null);
-                            new Login().execute();
-                        } else {
+                        if (!serverUrl.contains(".")){
                             txtUrlError.setVisibility(View.VISIBLE);
                             mServerUrl.setError("Invalid");
                             mServerUrl.setFocusable(true);
+                        } else {
+                            if(serverUrl.contains("http://") || serverUrl.contains("https://")){
+                                mServerUrl.setError(null);
+                                mUsername.setError(null);
+                                mPassword.setError(null);
+                                new Login().execute();
+                            } else {
+                                serverUrl = "http://" + serverUrl;
+                                mServerUrl.setError(null);
+                                mUsername.setError(null);
+                                mPassword.setError(null);
+                                new Login().execute();
+                            }
                         }
                     }
                 } else {
@@ -164,8 +176,8 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(LoginHelper loginHelper) {
             super.onPostExecute(loginHelper);
-            layoutLoading.setVisibility(View.INVISIBLE);
             if(loginHelper == null){
+                layoutLoading.setVisibility(View.INVISIBLE);
                 txtServerError.setVisibility(View.VISIBLE);
             } else {
                 if(loginHelper.getError().equals("0")){
@@ -176,9 +188,11 @@ public class LoginActivity extends Activity {
                     user.setUsername(username);
                     user.setToken(loginHelper.getToken());
                     service = new AndroidMasterServiceImpl(user);
+                    playSmsDb.insertServer(mServerUrl.getText().toString());
                     new GetContact().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
                 } else {
+                    layoutLoading.setVisibility(View.INVISIBLE);
                     textLoginError.setText(loginHelper.getErrorString());
                     textLoginError.setVisibility(View.VISIBLE);
                 }
@@ -235,6 +249,7 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
+            layoutLoading.setVisibility(View.INVISIBLE);
             if(messageHelper == null){
                 Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
@@ -271,6 +286,7 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             if (messageHelper == null){
+                layoutLoading.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
                 if (messageHelper.getStatus() != null) {
@@ -305,6 +321,7 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(ContactHelper contactHelper) {
             super.onPostExecute(contactHelper);
             if (contactHelper == null){
+                layoutLoading.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
                 if (contactHelper.getStatus() != null) {
