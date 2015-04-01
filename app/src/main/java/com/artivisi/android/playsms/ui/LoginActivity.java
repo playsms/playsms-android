@@ -241,6 +241,7 @@ public class LoginActivity extends Activity {
             try {
                 return service.getInbox();
             } catch (Exception e) {
+                textLoginError.setText(e.getMessage());
                 Log.d("CONNECTION ERROR : ", e.getMessage());
                 return null;
             }
@@ -251,7 +252,7 @@ public class LoginActivity extends Activity {
             super.onPostExecute(messageHelper);
             layoutLoading.setVisibility(View.INVISIBLE);
             if(messageHelper == null){
-                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
+                    textLoginError.setVisibility(View.VISIBLE);
             } else {
                 if (messageHelper.getStatus() != null) {
                     if (messageHelper.getStatus().equals("ERR")) {
@@ -322,7 +323,6 @@ public class LoginActivity extends Activity {
             super.onPostExecute(contactHelper);
             if (contactHelper == null){
                 layoutLoading.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
             } else {
                 if (contactHelper.getStatus() != null) {
                     if (contactHelper.getStatus().equals("OK")) {
