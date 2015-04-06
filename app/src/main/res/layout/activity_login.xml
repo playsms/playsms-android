@@ -46,25 +46,11 @@
                     android:id="@+id/text_login_loading"/>
 
             </LinearLayout>
-            <TextView style="@style/ErrorMessage"
-                android:layout_gravity="center"
-                android:text="No Internet Connection"
-                android:id="@+id/text_no_network" />
 
             <TextView style="@style/ErrorMessage"
                 android:layout_gravity="center"
-                android:text="Bad Credential"
+                android:text=""
                 android:id="@+id/text_login_error" />
-
-            <TextView style="@style/ErrorMessage"
-                android:layout_gravity="center"
-                android:text="Invalid URL"
-                android:id="@+id/text_url_error" />
-
-            <TextView style="@style/ErrorMessage"
-                android:layout_gravity="center"
-                android:text="Server Error"
-                android:id="@+id/text_server_error" />
 
         </FrameLayout>
 

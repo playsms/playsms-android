@@ -37,8 +37,9 @@ public class LoginActivity extends Activity {
 
     AndroidMasterService service = new AndroidMasterServiceImpl();
     EditText mUsername, mPassword, mServerUrl;
+    Button btnLogin;
     LinearLayout layoutLoading;
-    TextView textLoginError, txtNoNetwork, txtUrlError, txtServerError;
+    TextView textLoginError;
     String username, password, serverUrl;
     private PlaySmsDb playSmsDb;
     private Intent dashboardActivity;
@@ -64,17 +65,17 @@ public class LoginActivity extends Activity {
         textLoginError.setVisibility(View.INVISIBLE);
         textLoginError.setTypeface(typefaceSubTittle);
 
-        txtNoNetwork = (TextView) findViewById(R.id.text_no_network);
-        txtNoNetwork.setVisibility(View.INVISIBLE);
-        txtNoNetwork.setTypeface(typefaceSubTittle);
+//        txtNoNetwork = (TextView) findViewById(R.id.text_no_network);
+//        txtNoNetwork.setVisibility(View.INVISIBLE);
+//        txtNoNetwork.setTypeface(typefaceSubTittle);
 
-        txtUrlError = (TextView) findViewById(R.id.text_url_error);
-        txtUrlError.setVisibility(View.INVISIBLE);
-        txtUrlError.setTypeface(typefaceSubTittle);
+//        txtUrlError = (TextView) findViewById(R.id.text_url_error);
+//        txtUrlError.setVisibility(View.INVISIBLE);
+//        txtUrlError.setTypeface(typefaceSubTittle);
 
-        txtServerError = (TextView) findViewById(R.id.text_server_error);
-        txtServerError.setVisibility(View.INVISIBLE);
-        txtServerError.setTypeface(typefaceSubTittle);
+//        txtServerError = (TextView) findViewById(R.id.text_server_error);
+//        txtServerError.setVisibility(View.INVISIBLE);
+//        txtServerError.setTypeface(typefaceSubTittle);
 
         TextView loadingText = (TextView) findViewById(R.id.text_login_loading);
         loadingText.setTypeface(typefaceSubTittle);
@@ -95,16 +96,15 @@ public class LoginActivity extends Activity {
         mPassword = (EditText) findViewById(R.id.password);
         mPassword.setTypeface(ralewayRegular);
 
-        Button btnLogin = (Button) findViewById(R.id.button_login);
+        btnLogin = (Button) findViewById(R.id.button_login);
         btnLogin.setTypeface(typefaceTittle);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isNetworkAvailable()){
 
-                    txtNoNetwork.setVisibility(View.INVISIBLE);
-                    txtUrlError.setVisibility(View.INVISIBLE);
-                    txtServerError.setVisibility(View.INVISIBLE);
+                    if (textLoginError.getVisibility() == View.VISIBLE)
+                        textLoginError.setVisibility(View.INVISIBLE);
 
                     serverUrl = mServerUrl.getText().toString();
                     username = mUsername.getText().toString();
@@ -129,10 +129,12 @@ public class LoginActivity extends Activity {
                         }
                     } else {
                         if (!serverUrl.contains(".")){
-                            txtUrlError.setVisibility(View.VISIBLE);
+                            textLoginError.setText("Invalid URL");
+                            textLoginError.setVisibility(View.VISIBLE);
                             mServerUrl.setError("Invalid");
                             mServerUrl.setFocusable(true);
                         } else {
+                            btnLogin.setEnabled(false);
                             if(serverUrl.contains("http://") || serverUrl.contains("https://")){
                                 mServerUrl.setError(null);
                                 mUsername.setError(null);
@@ -148,7 +150,8 @@ public class LoginActivity extends Activity {
                         }
                     }
                 } else {
-                    txtNoNetwork.setVisibility(View.VISIBLE);
+                    textLoginError.setText("No Internet Connection");
+                    textLoginError.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -158,8 +161,8 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            textLoginError.setVisibility(View.INVISIBLE);
-            txtUrlError.setVisibility(View.INVISIBLE);
+            if(textLoginError.getVisibility() == View.VISIBLE)
+                textLoginError.setVisibility(View.INVISIBLE);
             layoutLoading.setVisibility(View.VISIBLE);
         }
 
@@ -178,9 +181,12 @@ public class LoginActivity extends Activity {
             super.onPostExecute(loginHelper);
             if(loginHelper == null){
                 layoutLoading.setVisibility(View.INVISIBLE);
-                txtServerError.setVisibility(View.VISIBLE);
+                textLoginError.setText("Server Error");
+                textLoginError.setVisibility(View.VISIBLE);
+                btnLogin.setEnabled(true);
             } else {
                 if(loginHelper.getError().equals("0")){
+                    if (textLoginError.getVisibility() == View.VISIBLE)
                     textLoginError.setVisibility(View.INVISIBLE);
                     Gson gson = new Gson();
                     User user = new User();
@@ -189,12 +195,13 @@ public class LoginActivity extends Activity {
                     user.setToken(loginHelper.getToken());
                     service = new AndroidMasterServiceImpl(user);
                     playSmsDb.insertServer(mServerUrl.getText().toString());
-                    new GetContact().execute();
                     setUserCookies(KEY_USER, gson.toJson(user));
+                    new GetContact().execute();
                 } else {
                     layoutLoading.setVisibility(View.INVISIBLE);
                     textLoginError.setText(loginHelper.getErrorString());
                     textLoginError.setVisibility(View.VISIBLE);
+                    btnLogin.setEnabled(true);
                 }
             }
         }
@@ -251,8 +258,10 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(MessageHelper messageHelper) {
             super.onPostExecute(messageHelper);
             layoutLoading.setVisibility(View.INVISIBLE);
+            btnLogin.setEnabled(true);
             if(messageHelper == null){
-                    textLoginError.setVisibility(View.VISIBLE);
+                textLoginError.setText("Connection Timeout");
+                textLoginError.setVisibility(View.VISIBLE);
             } else {
                 if (messageHelper.getStatus() != null) {
                     if (messageHelper.getStatus().equals("ERR")) {
@@ -288,7 +297,9 @@ public class LoginActivity extends Activity {
             super.onPostExecute(messageHelper);
             if (messageHelper == null){
                 layoutLoading.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(), "Connection Timeout", Toast.LENGTH_SHORT).show();
+                textLoginError.setText("Connection Timeout");
+                textLoginError.setVisibility(View.VISIBLE);
+                btnLogin.setEnabled(true);
             } else {
                 if (messageHelper.getStatus() != null) {
                     if (messageHelper.getStatus().equals("ERR")) {
@@ -322,7 +333,10 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(ContactHelper contactHelper) {
             super.onPostExecute(contactHelper);
             if (contactHelper == null){
+                textLoginError.setText("Connection Timeout");
+                textLoginError.setVisibility(View.VISIBLE);
                 layoutLoading.setVisibility(View.INVISIBLE);
+                btnLogin.setEnabled(true);
             } else {
                 if (contactHelper.getStatus() != null) {
                     if (contactHelper.getStatus().equals("OK")) {
