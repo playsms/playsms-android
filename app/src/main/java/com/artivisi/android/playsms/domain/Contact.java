@@ -13,6 +13,7 @@ public class Contact {
     @JsonProperty("p_num")
     private String pNum;
     private String email;
+    private String tags;
     @JsonIgnore
     private boolean selected;
 
@@ -54,5 +55,13 @@ public class Contact {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

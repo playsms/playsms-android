@@ -192,6 +192,7 @@ public class LoginActivity extends Activity {
                     User user = new User();
                     user.setServerUrl(serverUrl);
                     user.setUsername(username);
+                    user.setPassword(password);
                     user.setToken(loginHelper.getToken());
                     service = new AndroidMasterServiceImpl(user);
                     playSmsDb.insertServer(mServerUrl.getText().toString());

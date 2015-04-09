@@ -54,7 +54,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     private SQLiteDatabase sqliteDBInstance = null;
 
-    private static final String DB_CREATE_TABLE_INBOX_SCRIPT = "create table " + DB_TABLE_INBOX
+    private static final String DB_CREATE_TABLE_INBOX_SCRIPT = "create table if not exists " + DB_TABLE_INBOX
             + "(" + DB_COLUMN_ID + " integer,"
             + DB_COLUMN_SRC + " text,"
             + DB_COLUMN_DST + " text,"
@@ -63,7 +63,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_MSG_DELETED + " integer,"
             + DB_COLUMN_READ + " int)";
 
-    private static final String DB_CREATE_TABLE_SENT_SCRIPT = "create table " + DB_TABLE_SENT
+    private static final String DB_CREATE_TABLE_SENT_SCRIPT = "create table if not exists " + DB_TABLE_SENT
             + "(" + DB_COLUMN_SMSLOG + " integer,"
             + DB_COLUMN_SRC + " text,"
             + DB_COLUMN_DST + " text,"
@@ -73,7 +73,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_STATUS + " text,"
             + DB_COLUMN_MSG_DELETED + " integer)";
 
-    private static final String DB_CREATE_TABLE_USER_SCRIPT = "crete table " + DB_TABLE_USER
+    private static final String DB_CREATE_TABLE_USER_SCRIPT = "crete table if not exists " + DB_TABLE_USER
             + "(" + DB_COLUMN_USERNAME + " text,"
             + DB_COLUMN_UID + " text,"
             + DB_COLUMN_USER_STATUS + " text,"
@@ -81,13 +81,13 @@ public class PlaySmsDb extends SQLiteOpenHelper {
             + DB_COLUMN_EMAIL + " text,"
             + DB_COLUMN_CREDIT + " text)";
 
-    private static final String DB_CREATE_TABLE_CONTACT_SCRIPT = "create table " + DB_TABLE_CONTACT
+    private static final String DB_CREATE_TABLE_CONTACT_SCRIPT = "create table if not exists " + DB_TABLE_CONTACT
             + "(" + DB_COLUMN_PID + " text,"
             + DB_COLUMN_P_DESC + " text,"
             + DB_COLUMN_P_NUM + " text,"
             + DB_COLUMN_EMAIL + " text)";
 
-    private static final String DB_CREATE_TABLE_SERVER_SCRIPT = "create table " + DB_TABLE_SERVER
+    private static final String DB_CREATE_TABLE_SERVER_SCRIPT = "create table if not exists " + DB_TABLE_SERVER
             + "(" + DB_COLUMN_URL + " text)";
 
     public PlaySmsDb(Context context) {
@@ -105,7 +105,10 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(DB_CREATE_TABLE_INBOX_SCRIPT);
+        db.execSQL(DB_CREATE_TABLE_SENT_SCRIPT);
+        db.execSQL(DB_CREATE_TABLE_CONTACT_SCRIPT);
+        db.execSQL(DB_CREATE_TABLE_SERVER_SCRIPT);
     }
 
     public void insertInbox(Message message){

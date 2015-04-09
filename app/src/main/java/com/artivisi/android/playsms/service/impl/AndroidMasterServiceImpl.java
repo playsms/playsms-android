@@ -162,7 +162,8 @@ public class AndroidMasterServiceImpl implements AndroidMasterService {
 
     @Override
     public ContactHelper getContact() throws Exception {
-        String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&h=" + user.getToken() + "&kwd=%&op=get_contact&format=json";
+        String url = PLAYSMS_URL + BASE_URI + "&u=" + user.getUsername() + "&p=" + user.getPassword() +"&h=" + user.getToken() + "&kwd=%&op=get_contact&format=json";
+        Log.i("URL : ", url);
         try {
             ResponseEntity<ContactHelper> responseEntity = restTemplate.getForEntity(url, ContactHelper.class);
             return responseEntity.getBody();
