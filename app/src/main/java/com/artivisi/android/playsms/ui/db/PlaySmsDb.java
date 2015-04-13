@@ -105,10 +105,7 @@ public class PlaySmsDb extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DB_CREATE_TABLE_INBOX_SCRIPT);
-        db.execSQL(DB_CREATE_TABLE_SENT_SCRIPT);
-        db.execSQL(DB_CREATE_TABLE_CONTACT_SCRIPT);
-        db.execSQL(DB_CREATE_TABLE_SERVER_SCRIPT);
+        onCreate(db);
     }
 
     public void insertInbox(Message message){
@@ -422,15 +419,20 @@ public class PlaySmsDb extends SQLiteOpenHelper {
     public String getLastServer(){
         sqliteDBInstance = getWritableDatabase();
         String server = "";
-        Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SERVER, new String[]{DB_COLUMN_URL}, null, null, null, null, null, "1");
-        if(cursor.getCount() > 0){
-            while (cursor.moveToNext()){
-                server = cursor.getString(cursor.getColumnIndex(DB_COLUMN_URL));
+        try{
+            Cursor cursor = this.sqliteDBInstance.query(DB_TABLE_SERVER, new String[]{DB_COLUMN_URL}, null, null, null, null, null, "1");
+            if(cursor.getCount() > 0){
+                while (cursor.moveToNext()){
+                    server = cursor.getString(cursor.getColumnIndex(DB_COLUMN_URL));
+                }
+                sqliteDBInstance.close();
+                return server;
+            } else {
+                sqliteDBInstance.close();
+                return server;
             }
-            sqliteDBInstance.close();
-            return server;
-        } else {
-            sqliteDBInstance.close();
+        } catch (Exception ex){
+            sqliteDBInstance.execSQL(DB_CREATE_TABLE_SERVER_SCRIPT);
             return server;
         }
     }
