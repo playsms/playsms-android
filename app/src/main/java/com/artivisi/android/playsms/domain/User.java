@@ -10,6 +10,7 @@ public class User {
     private String status;
     private String name;
     private String email;
+    private String mobile;
     private String token;
     private String credit;
     private String serverUrl;
@@ -76,6 +77,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getCredit() {

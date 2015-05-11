@@ -52,6 +52,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DashboardActivity" />
         </activity>
+        <service android:name=".ui.StartupService" />
         <receiver android:name=".ui.QueryReceiver" >
             <intent-filter>
                 <action android:name=".DISPLAY_MESSAGE" >
